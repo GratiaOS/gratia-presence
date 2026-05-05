@@ -1,0 +1,126 @@
+{
+  "name": "@gratiaos/ui",
+  "version": "1.3.2",
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "description": "Headless Garden UI primitives with opt-in skins and realtime-friendly hooks.",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GratiaOS/gratia-presence.git",
+    "directory": "packages/ui"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./primitives/Button": {
+      "types": "./dist/primitives/button.d.ts",
+      "import": "./dist/primitives/button.js"
+    },
+    "./primitives/Card": {
+      "types": "./dist/primitives/card.d.ts",
+      "import": "./dist/primitives/card.js"
+    },
+    "./primitives/Pill": {
+      "types": "./dist/primitives/pill.d.ts",
+      "import": "./dist/primitives/pill.js"
+    },
+    "./primitives/Field": {
+      "types": "./dist/primitives/field.d.ts",
+      "import": "./dist/primitives/field.js"
+    },
+    "./primitives/Toast": {
+      "types": "./dist/primitives/toast.d.ts",
+      "import": "./dist/primitives/toast.js"
+    },
+    "./primitives/Badge": {
+      "types": "./dist/primitives/badge.d.ts",
+      "import": "./dist/primitives/badge.js"
+    },
+    "./primitives/Toolbar": {
+      "types": "./dist/primitives/toolbar.d.ts",
+      "import": "./dist/primitives/toolbar.js"
+    },
+    "./primitives/Select": {
+      "types": "./dist/primitives/select.d.ts",
+      "import": "./dist/primitives/select.js"
+    },
+    "./primitives/Whisper": {
+      "types": "./dist/primitives/whisper.d.ts",
+      "import": "./dist/primitives/whisper.js"
+    },
+    "./styles/base.css": {
+      "default": "./styles/base.css"
+    },
+    "./styles/button.css": {
+      "default": "./styles/button.css"
+    },
+    "./styles/card.css": {
+      "default": "./styles/card.css"
+    },
+    "./styles/field.css": {
+      "default": "./styles/field.css"
+    },
+    "./styles/toast.css": {
+      "default": "./styles/toast.css"
+    },
+    "./styles/pad.css": {
+      "default": "./styles/pad.css"
+    },
+    "./styles/theme.css": {
+      "default": "./styles/theme.css"
+    },
+    "./styles/pill.css": {
+      "default": "./styles/pill.css"
+    },
+    "./styles/badge.css": {
+      "default": "./styles/badge.css"
+    },
+    "./styles/toolbar.css": {
+      "default": "./styles/toolbar.css"
+    },
+    "./styles/select.css": {
+      "default": "./styles/select.css"
+    },
+    "./styles/whisper.css": {
+      "default": "./styles/whisper.css"
+    },
+    "./styles/header.css": {
+      "default": "./styles/header.css"
+    }
+  },
+  "files": [
+    "dist/**",
+    "styles/**",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "**/*.css",
+    "styles/*.css"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node ./scripts/copy-styles.mjs",
+    "check:headers": "node ./scripts/check-headers.mjs",
+    "prepublishOnly": "pnpm run build"
+  },
+  "peerDependencies": {
+    "react": "^18 || ^19"
+  },
+  "dependencies": {
+    "@gratiaos/presence-kernel": "^1.1.6"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "react": "^19.2.4",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,286 @@
+@layer components {
+  /* ─────────────────────────────────────────────────────────────
+     Garden UI — Toast skin (headless primitive)
+     Whisper: "news should land softly, then move on." 🌬️
+
+     Purpose
+       • Selector-only skin for the headless Toast primitive.
+       • Tokens drive all visuals (no hardcoded hex).
+       • Calm by default; readable in both light/dark.
+
+     Data API (from the primitive)
+       • [data-ui="toast"]                     — container
+         ◦ [data-position="bottom-center|top-right|top-center|bottom-right"]
+       • [data-role="stack"]                   — internal stack wrapper (grid)
+       • [data-ui="toast-item"]                — individual toast
+         ◦ [data-variant="neutral|positive|warning|danger"]
+         ◦ optional [data-state="entering|leaving"] for transitions (future-friendly)
+         ◦ children:
+           · [data-role="icon"]                — optional leading emoji/glyph
+           · [data-role="content"]             — wrapper for title/desc
+           · [data-role="title"]               — strong line
+           · [data-role="desc"]                — secondary line
+           · [data-role="message"]             — single-line back-compat
+
+     A11y
+       • Items use role="status" + aria-atomic="true" so screen readers announce
+         the toast as a single unit. Timers pause on :hover / :focus-visible.
+
+     Tokens used
+       • Surface  : --elev / --surface
+       • Text     : --text / --text-subtle
+       • Accent   : --color-accent / --color-positive / --color-warning / --color-danger
+       • Border   : --border
+       • Motion   : --animate-breathe, --duration-snug, --ease-soft
+       • Ring (focus): --ring-color (optional, falls back to accent mix)
+
+     Notes
+       • Keep the HTML minimal; this skin is resilient to the single-line legacy
+         form and the newer title+desc content model.
+   ──────────────────────────────────────────────────────────── */
+
+  /* Container positions */
+  [data-ui='toast'][data-position='bottom-center'] {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 50;
+  }
+  [data-ui='toast'][data-position='top-right'] {
+    position: fixed;
+    right: 16px;
+    top: max(16px, env(safe-area-inset-top));
+    pointer-events: none;
+    z-index: 50;
+  }
+  [data-ui='toast'][data-position='top-center'] {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: max(16px, env(safe-area-inset-top));
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 50;
+  }
+  [data-ui='toast'][data-position='bottom-right'] {
+    position: fixed;
+    right: 16px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  /* Stack layout */
+  [data-ui='toast'] [data-role='stack'] {
+    display: grid;
+    gap: 8px;
+  }
+
+  /* Stack alignment helpers per position */
+  [data-ui='toast'][data-position='top-right'] [data-role='stack'],
+  [data-ui='toast'][data-position='bottom-right'] [data-role='stack'] {
+    justify-items: end;
+  }
+  [data-ui='toast'][data-position='bottom-center'] [data-role='stack'],
+  [data-ui='toast'][data-position='top-center'] [data-role='stack'] {
+    justify-items: center;
+  }
+
+  /* Burst protection — cap stack height & allow smooth scroll on overflow */
+  [data-ui='toast'] [data-role='stack'] {
+    /* Cap visible height; avoid scroll for normal usage */
+    max-height: min(40vh, 50svh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    padding-block: 2px; /* tiny cushion for focus ring / last item */
+  }
+
+  /* Tighter caps per position (right stacks typically shorter) */
+  [data-ui='toast'][data-position='top-right'] [data-role='stack'],
+  [data-ui='toast'][data-position='bottom-right'] [data-role='stack'] {
+    max-height: min(36vh, 44svh);
+  }
+
+  /* Subtle scrollbar styling */
+  [data-ui='toast'] [data-role='stack']::-webkit-scrollbar {
+    width: 8px;
+  }
+  [data-ui='toast'] [data-role='stack']::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--color-text) 18%, transparent);
+    border-radius: 8px;
+  }
+  [data-ui='toast'] [data-role='stack']::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--color-text) 28%, transparent);
+  }
+  [data-ui='toast'] [data-role='stack']::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Firefox */
+  [data-ui='toast'] [data-role='stack'] {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--color-text) 22%, transparent) transparent;
+  }
+
+  /* Item skin */
+  [data-ui='toast-item'] {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--elev);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--bar, var(--color-accent));
+    border-radius: var(--radius-pill);
+    padding: 8px 12px;
+    box-shadow: var(--shadow-card-ambient);
+    max-width: min(92vw, 520px);
+    margin: 0 auto;
+    animation: var(--animate-breathe);
+    transition: opacity var(--duration-snug) var(--ease-soft), transform var(--duration-snug) var(--ease-soft);
+    will-change: opacity, transform;
+    cursor: pointer;
+  }
+
+  /* Leading icon (optional) — keeps emoji/glyphs neatly aligned */
+  [data-ui='toast-item'] [data-role='icon'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto; /* do not shrink */
+    width: 18px;
+    height: 18px;
+    font-size: 14px; /* emoji size */
+    line-height: 1;
+    opacity: 0.95;
+  }
+
+  /* Content layout — single line by default; becomes vertical when title/desc present */
+  [data-ui='toast-item'] [data-role='content'] {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0; /* allow text wrap */
+  }
+
+  /* Typography */
+  [data-ui='toast-item'] [data-role='title'] {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--text);
+  }
+  [data-ui='toast-item'] [data-role='desc'],
+  [data-ui='toast-item'] [data-role='message'] {
+    font-size: 13px;
+    line-height: 1.25;
+    color: var(--text-subtle);
+  }
+
+  /* Clamp long descriptions to ~3 lines */
+  [data-ui='toast-item'] [data-role='desc'] {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+  }
+
+  /* Single-line message with ellipsis */
+  [data-ui='toast-item'] [data-role='message'] {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Back-compat: when only [data-role='message'] exists (no content wrapper) */
+  [data-ui='toast-item'] > [data-role='message'] {
+    font-size: 14px;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Variants set the accent bar color */
+  [data-ui='toast-item'][data-variant='neutral'] {
+    --bar: var(--color-accent);
+  }
+  [data-ui='toast-item'][data-variant='positive'] {
+    --bar: var(--color-positive);
+  }
+  [data-ui='toast-item'][data-variant='warning'] {
+    --bar: var(--color-warning);
+  }
+  [data-ui='toast-item'][data-variant='danger'] {
+    --bar: var(--color-danger);
+  }
+  /* Alias — info maps to accent (DX sugar) */
+  [data-ui='toast-item'][data-variant='info'] {
+    --bar: var(--color-accent);
+  }
+
+  /* Transient state — gentle entrance */
+  [data-ui='toast-item'][data-state='entering'] {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+    /* The base rule already defines transition; we just set the starting pose.
+       When JS removes [data-state='entering'], it eases to opacity:1 / transform:none. */
+  }
+
+  /* Transient state — graceful exit */
+  [data-ui='toast-item'][data-state='leaving'] {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+    transition: opacity var(--duration-snug) var(--ease-soft), transform var(--duration-snug) var(--ease-soft);
+    pointer-events: none; /* avoid clicks while fading */
+  }
+
+  /* Position-aware vectors — slide down from top, up from bottom */
+  [data-ui='toast'][data-position='top-right'] [data-ui='toast-item'][data-state='entering'],
+  [data-ui='toast'][data-position='top-center'] [data-ui='toast-item'][data-state='entering'] {
+    transform: translateY(-6px) scale(0.98);
+  }
+  [data-ui='toast'][data-position='top-right'] [data-ui='toast-item'][data-state='leaving'],
+  [data-ui='toast'][data-position='top-center'] [data-ui='toast-item'][data-state='leaving'] {
+    transform: translateY(-6px) scale(0.98);
+  }
+
+  [data-ui='toast'][data-position='bottom-right'] [data-ui='toast-item'][data-state='entering'],
+  [data-ui='toast'][data-position='bottom-center'] [data-ui='toast-item'][data-state='entering'] {
+    transform: translateY(6px) scale(0.98);
+  }
+  [data-ui='toast'][data-position='bottom-right'] [data-ui='toast-item'][data-state='leaving'],
+  [data-ui='toast'][data-position='bottom-center'] [data-ui='toast-item'][data-state='leaving'] {
+    transform: translateY(6px) scale(0.98);
+  }
+
+  /* Focus visibility — match ring semantics used across primitives */
+  [data-ui='toast-item']:focus-visible {
+    outline: 2px solid var(--ring-color, color-mix(in oklab, var(--color-accent) 60%, transparent));
+    outline-offset: 2px;
+  }
+
+  /* Motion accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    [data-ui='toast-item'] {
+      animation: none;
+    }
+    [data-ui='toast-item'][data-state='leaving'] {
+      transform: none;
+      transition: opacity var(--duration-snug) var(--ease-soft);
+    }
+    [data-ui='toast-item'][data-state='entering'] {
+      transform: none;
+    }
+  }
+}

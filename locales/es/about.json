@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "title": "Sobre Gratia",
+    "description": "Entender Gratia: capas Pública, Compartida y Sellada, y mantenimiento del campo"
+  },
+  "header": {
+    "title": "Sobre Gratia",
+    "subtitle": "Un espacio de práctica para registrar lo que importa. Sin presión de crecimiento. Sin bucles de atención."
+  },
+  "whatIs": {
+    "title": "Qué es Gratia",
+    "p1": "Gratia es un espacio de práctica. Registras momentos, pensamientos u observaciones sin esperar propagación rápida ni recompensa algorítmica.",
+    "p2": "Soporta tres capas de visibilidad — Pública, Compartida y Sellada — para que controles quién ve qué. No se monetiza nada. El silencio siempre es válido."
+  },
+  "layers": {
+    "title": "Pública / Compartida / Sellada",
+    "public": {
+      "title": "Pública",
+      "body": "Cualquiera puede leer. Lenguaje claro y directo. Esta capa es para ideas que compartirías cómodamente en una plaza pública."
+    },
+    "shared": {
+      "title": "Compartida",
+      "body": "Visible para las personas que invites. Más contexto, más densidad simbólica. Tú decides quién entra en esta capa."
+    },
+    "sealed": {
+      "title": "Sellada",
+      "body": "Privada. Solo tú. Aquí escribes para ti — sin audiencia, sin actuación."
+    }
+  },
+  "agency": {
+    "title": "Agencia y Consentimiento",
+    "p1": "Gratia respeta los límites. Tú eliges qué publicas, a quién invitas y cuándo permanecer en silencio. No hay patrones oscuros que te empujen a compartir más de lo que quieres.",
+    "p2": "Exporta tus datos cuando quieras. Borra entradas de forma permanente. Tus palabras te pertenecen a ti, no a la plataforma."
+  },
+  "export": {
+    "title": "Límites de Exportación",
+    "p1": "Puedes exportar tu contenido como datos estructurados — JSON, Markdown o CSV. Llévatelo a otro lugar si lo deseas. Sin bloqueo.",
+    "p2": "Gratia no reclama propiedad sobre tus palabras. El campo existe para servir tu práctica, no para capturar tu atención."
+  },
+  "maintenance": {
+    "title": "Mantenimiento del Campo",
+    "p1": "Gratia se sostiene como un campo sin ánimo de lucro. No hay un reloj de inversores exigiendo crecimiento o atención.",
+    "p2": "El hosting puede sostenerse con contribuciones opcionales. Si el campo te sirve, puedes ayudar a mantenerlo. Si no, igual eres bienvenido."
+  },
+  "mediumMode": {
+    "title": "Modo Medium",
+    "p1": "El Modo Medium usa tipografía monoespaciada para crear distancia suave entre tú y el texto.",
+    "sample": {
+      "date": "2025-01-15 / mañana",
+      "body": "Hoy la luz entró de otra manera. Ni mejor ni peor — solo distinta. La noté y seguí. A veces eso basta.",
+      "sig": "— entrada sellada"
+    }
+  },
+  "footer": {
+    "text": "Sin anuncios. Sin rastreo. Sin flujo algorítmico. Solo un campo para la práctica."
+  }
+}

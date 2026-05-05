@@ -1,0 +1,30 @@
+{
+  "buttons": {
+    "continue": "Continue",
+    "back": "Back",
+    "enterCodex": "Enter the Codex"
+  },
+  "links": {
+    "learnMore": "Learn more"
+  },
+  "skins": {
+    "sun": "Sun",
+    "moon": "Moon",
+    "garden": "Garden",
+    "stellar": "Stellar"
+  },
+  "types": {
+    "default": "Default",
+    "vienna": "Vienna"
+  },
+  "locales": {
+    "en": "English",
+    "es": "Español",
+    "ro": "Română"
+  },
+  "nozzle": {
+    "soft": "Soft",
+    "focused": "Focused",
+    "celebratory": "Celebratory"
+  }
+}

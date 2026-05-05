@@ -1,0 +1,42 @@
+{
+  "soft-root": {
+    "label": "raíz suave",
+    "description": "Una fuerza tranquila que te sostiene con delicadeza.",
+    "emoji": "🌱"
+  },
+  "warm-courage": {
+    "label": "coraje cálido",
+    "description": "Un pequeño calor constante que ayuda a que la verdad salga.",
+    "emoji": "🔥"
+  },
+  "quiet-seeing": {
+    "label": "mirada quieta",
+    "description": "Ver sin esfuerzo, como la luz moviéndose sobre el agua.",
+    "emoji": "🍃"
+  },
+  "inner-spring": {
+    "label": "primavera interior",
+    "description": "Un movimiento fresco dentro de ti que quiere crecer.",
+    "emoji": "🌸"
+  },
+  "open-field": {
+    "label": "campo abierto",
+    "description": "Una sensación de espacio alrededor de tus pensamientos.",
+    "emoji": "🌾"
+  },
+  "shared-fire": {
+    "label": "fuego compartido",
+    "description": "El calor que aparece cuando los corazones se acercan.",
+    "emoji": "🫂"
+  },
+  "guiding-light": {
+    "label": "luz guía",
+    "description": "Un pequeño brillo honesto que muestra el próximo paso.",
+    "emoji": "✨"
+  },
+  "mountain-circle": {
+    "label": "círculo de montaña",
+    "description": "La quieta pertenencia que se siente al estar juntos.",
+    "emoji": "🏔️"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "title": "About Gratia",
+    "description": "Understanding Gratia: Public, Shared, Sealed layers and field maintenance"
+  },
+  "header": {
+    "title": "About Gratia",
+    "subtitle": "A practice space for recording what matters. No growth pressure. No engagement loops."
+  },
+  "whatIs": {
+    "title": "What is Gratia",
+    "p1": "Gratia is a practice space. You record moments, thoughts, or observations without expectation of rapid spread or algorithmic reward.",
+    "p2": "It supports three layers of visibility — Public, Shared, and Sealed — so you control who sees what. Nothing is monetized. Silence is always valid."
+  },
+  "layers": {
+    "title": "Public / Shared / Sealed",
+    "public": {
+      "title": "Public",
+      "body": "Anyone can read. Plain, clear language. This layer is for ideas you’d comfortably share in a public square."
+    },
+    "shared": {
+      "title": "Shared",
+      "body": "Visible to people you’ve invited. More context, more symbolic density. You decide who enters this layer."
+    },
+    "sealed": {
+      "title": "Sealed",
+      "body": "Private. Only you. This is where you write for yourself — no audience, no performance."
+    }
+  },
+  "agency": {
+    "title": "Agency & Consent",
+    "p1": "Gratia respects boundaries. You choose what you publish, who you invite, and when to stay silent. There are no dark patterns nudging you to share more than you want.",
+    "p2": "Export your data anytime. Delete entries permanently. Your writing belongs to you, not the platform."
+  },
+  "export": {
+    "title": "Export Boundaries",
+    "p1": "You can export your content as structured data — JSON, Markdown, or CSV. Take it elsewhere if you wish. No lock-in.",
+    "p2": "Gratia doesn’t claim ownership over your words. The field exists to serve your practice, not capture your attention."
+  },
+  "maintenance": {
+    "title": "Field Maintenance",
+    "p1": "Gratia is held as a non-profit field. There’s no investor clock demanding growth or engagement.",
+    "p2": "Hosting can be supported through optional contributions. If you find the field useful, you can help maintain it. If not, you’re still welcome."
+  },
+  "mediumMode": {
+    "title": "Medium Mode",
+    "p1": "Medium Mode uses monospace typography to create space between you and the text.",
+    "sample": {
+      "date": "2025-01-15 / morning",
+      "body": "The light came through differently today. Not better or worse — just different. I noticed it, then moved on. Sometimes that’s enough.",
+      "sig": "— sealed entry"
+    }
+  },
+  "footer": {
+    "text": "No ads. No tracking. No algorithmic feed. Just a field for practice."
+  }
+}

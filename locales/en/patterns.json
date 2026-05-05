@@ -1,0 +1,42 @@
+{
+  "soft-root": {
+    "label": "soft root",
+    "description": "A quiet strength that holds you gently from below.",
+    "emoji": "🌱"
+  },
+  "warm-courage": {
+    "label": "warm courage",
+    "description": "A small steady warmth that helps truth come forward.",
+    "emoji": "🔥"
+  },
+  "quiet-seeing": {
+    "label": "quiet seeing",
+    "description": "Noticing without effort, like watching light move on water.",
+    "emoji": "🍃"
+  },
+  "inner-spring": {
+    "label": "inner spring",
+    "description": "A fresh movement inside you that wants to grow.",
+    "emoji": "🌸"
+  },
+  "open-field": {
+    "label": "open field",
+    "description": "A sense of spaciousness around your thoughts.",
+    "emoji": "🌾"
+  },
+  "shared-fire": {
+    "label": "shared fire",
+    "description": "The warmth that appears when hearts gather close.",
+    "emoji": "🫂"
+  },
+  "guiding-light": {
+    "label": "guiding light",
+    "description": "A small honest brightness that shows the next inch.",
+    "emoji": "✨"
+  },
+  "mountain-circle": {
+    "label": "mountain circle",
+    "description": "The quiet belonging felt when people stand together.",
+    "emoji": "🏔️"
+  }
+}

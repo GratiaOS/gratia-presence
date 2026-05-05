@@ -1,0 +1,257 @@
+/* ─────────────────────────────────────────────────────────────
+   Garden UI — Button skin (opt‑in)
+   Whisper: "press should feel like choosing, not forcing." 🌬️
+
+   Purpose
+     • Selector-only skin for the headless Button primitive.
+     • Uses Garden tokens; no hardcoded hex.
+
+   Data API
+     • [data-ui='button']              — root
+     • [data-variant='solid|outline|ghost|subtle']
+     • [data-tone='default|accent|positive|warning|danger']
+     • [data-density='snug|cozy']      — spacing/size
+     • [data-state='idle|loading|disabled'] (plus [disabled])
+     • [data-loading-mode='inline|blocking'] when loading
+     • [data-slot='icon leading|icon trailing|spinner|overlay'] for adornments, progress & blocking
+
+   A11y & Motion
+     • Focus-visible ring uses --ring-accent (fallback mixes accent against white).
+     • Hover lift is tiny (0.5px); no animations here, so reduced motion is implicit.
+     • Controls remain tabbable and legible across light/dark themes.
+     • Icon slots are presentational; TS marks them aria-hidden so screen readers read the label once.
+
+   Theming notes
+     • Surface/background: --color-elev; text: --color-text; borders: --color-border.
+     • Accents: --color-accent|positive|warning|danger; on-accent: --color-on-accent.
+     • Radius uses --radius-pill.
+
+   Future ideas
+     • Roomy density; progress stripe for loading; pressed-depth tokens.
+   ──────────────────────────────────────────────────────────── */
+
+@layer components {
+  /* Base */
+  [data-ui='button'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    font-weight: 500;
+    line-height: 1;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+  }
+
+  /* Density */
+  [data-ui='button'][data-density='snug'] {
+    padding: 0.375rem 0.75rem;
+    font-size: var(--text-sm);
+  }
+  [data-ui='button'][data-density='cozy'] {
+    padding: 0.5rem 0.875rem;
+    font-size: var(--text-sm);
+  }
+
+  /* Parts */
+  [data-ui='button'] [data-slot~='icon'] {
+    display: inline-flex;
+  }
+  [data-ui='button'] [data-slot='icon leading'] {
+    margin-inline-end: 0.25rem;
+  }
+  [data-ui='button'] [data-slot='icon trailing'] {
+    margin-inline-start: 0.25rem;
+  }
+
+  /* Tone → focus ring color variable (used by :focus-visible) */
+  [data-ui='button'][data-tone='default'] { --ring-accent: color-mix(in oklab, var(--color-text) 80%, white 20%); }
+  [data-ui='button'][data-tone='accent']  { --ring-accent: color-mix(in oklab, var(--color-accent) 85%, white 15%); }
+  [data-ui='button'][data-tone='positive']{ --ring-accent: color-mix(in oklab, var(--color-positive) 85%, white 15%); }
+  [data-ui='button'][data-tone='warning'] { --ring-accent: color-mix(in oklab, var(--color-warning) 85%, white 15%); }
+  [data-ui='button'][data-tone='danger']  { --ring-accent: color-mix(in oklab, var(--color-danger) 85%, white 15%); }
+
+  /* Spinner — inline, token-aware, respects reduced motion */
+  [data-ui='button'] [data-slot='spinner'] {
+    display: inline-block;
+    width: 0.875rem; /* 14px */
+    height: 0.875rem; /* 14px */
+    box-sizing: border-box; /* ensures width/height include border (fixes box-model lint) */
+    margin-inline-start: 0.25rem;
+    border-radius: 9999px;
+    border: 2px solid currentColor;
+    border-top-color: transparent; /* creates the arc */
+    animation: ui-spin var(--duration-snug, 0.9s) linear infinite;
+  }
+
+  @keyframes ui-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-ui='button'] [data-slot='spinner'] {
+      animation: none;
+      /* show a static dot when motion is reduced */
+      border-color: currentColor;
+      border-top-color: currentColor;
+      opacity: 0.8;
+    }
+  }
+
+  /* Blocking overlay — covers the button and centers a spinner */
+  [data-ui='button'][data-loading-mode='blocking'] {
+    position: relative; /* create containing block for overlay */
+  }
+  [data-ui='button'][data-loading-mode='blocking'] [data-slot='overlay'] {
+    position: absolute;
+    inset: -1px; /* cover border too */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+    pointer-events: none; /* overlay does not steal clicks */
+    /* Gentle dim across variants (token-mixed) */
+    background: var(--button-overlay-dim, color-mix(in oklab, var(--color-elev) 82%, var(--color-text) 18%));
+  }
+  [data-ui='button'][data-loading-mode='blocking'] [data-slot='overlay'] [data-slot='spinner'] {
+    width: 1rem; /* 16px */
+    height: 1rem; /* 16px */
+    box-sizing: border-box; /* ensures width/height include border (fixes box-model lint) */
+    margin: 0; /* centered, no extra gap */
+  }
+
+  /* Variants — SOLID (filled surface, on-accent text for non-default tones) */
+  [data-ui='button'][data-variant='solid'] {
+    border-color: transparent;
+    color: var(--color-on-accent);
+  }
+  [data-ui='button'][data-variant='solid'][data-tone='default'] {
+    background: var(--color-elev);
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+  [data-ui='button'][data-variant='solid'][data-tone='accent'] {
+    background: var(--color-accent);
+  }
+  [data-ui='button'][data-variant='solid'][data-tone='positive'] {
+    background: var(--color-positive);
+  }
+  [data-ui='button'][data-variant='solid'][data-tone='warning'] {
+    background: var(--color-warning);
+    color: var(--color-on-accent);
+  }
+  [data-ui='button'][data-variant='solid'][data-tone='danger'] {
+    background: var(--color-danger);
+  }
+
+  /* Variants — OUTLINE (transparent fill, colored border/text) */
+  [data-ui='button'][data-variant='outline'] {
+    background: transparent;
+  }
+  [data-ui='button'][data-variant='outline'][data-tone='default'] {
+    color: var(--color-text);
+  }
+  [data-ui='button'][data-variant='outline'][data-tone='accent'] {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  [data-ui='button'][data-variant='outline'][data-tone='positive'] {
+    color: var(--color-positive);
+    border-color: var(--color-positive);
+  }
+  [data-ui='button'][data-variant='outline'][data-tone='warning'] {
+    color: var(--color-warning);
+    border-color: var(--color-warning);
+  }
+  [data-ui='button'][data-variant='outline'][data-tone='danger'] {
+    color: var(--color-danger);
+    border-color: var(--color-danger);
+  }
+
+  /* Variants — GHOST (no border, transparent fill; subtle hover wash on tone) */
+  [data-ui='button'][data-variant='ghost'] {
+    background: transparent;
+    border-color: transparent;
+  }
+  [data-ui='button'][data-variant='ghost'][data-tone='default'] {
+    color: var(--color-text);
+  }
+  [data-ui='button'][data-variant='ghost'][data-tone='accent'] {
+    color: var(--color-accent);
+  }
+  [data-ui='button'][data-variant='ghost'][data-tone='positive'] {
+    color: var(--color-positive);
+  }
+  [data-ui='button'][data-variant='ghost'][data-tone='warning'] {
+    color: var(--color-warning);
+  }
+  [data-ui='button'][data-variant='ghost'][data-tone='danger'] {
+    color: var(--color-danger);
+  }
+
+  /* Variants — SUBTLE (neutral surface, gentle border; good for low-stakes actions) */
+  [data-ui='button'][data-variant='subtle'] {
+    background: var(--color-fill-subtle);
+    color: var(--color-text);
+    border-color: color-mix(in oklab, var(--color-text) 12%, transparent);
+  }
+
+  /* Hover — slight lift + color wash (whisper: "make intent feel light") */
+  @media (hover: hover) {
+    [data-ui='button']:not([disabled])[data-state='idle']:hover {
+      transform: translateY(-0.5px);
+    }
+    [data-ui='button'][data-variant='outline'][data-tone='accent']:hover {
+      background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+    }
+    [data-ui='button'][data-variant='outline'][data-tone='positive']:hover {
+      background: color-mix(in oklab, var(--color-positive) 12%, transparent);
+    }
+    [data-ui='button'][data-variant='outline'][data-tone='warning']:hover {
+      background: color-mix(in oklab, var(--color-warning) 12%, transparent);
+    }
+    [data-ui='button'][data-variant='outline'][data-tone='danger']:hover {
+      background: color-mix(in oklab, var(--color-danger) 12%, transparent);
+    }
+    [data-ui='button'][data-variant='ghost'][data-tone='accent']:hover {
+      background: color-mix(in oklab, var(--color-accent) 10%, transparent);
+    }
+    [data-ui='button'][data-variant='ghost'][data-tone='positive']:hover {
+      background: color-mix(in oklab, var(--color-positive) 10%, transparent);
+    }
+    [data-ui='button'][data-variant='ghost'][data-tone='warning']:hover {
+      background: color-mix(in oklab, var(--color-warning) 10%, transparent);
+    }
+    [data-ui='button'][data-variant='ghost'][data-tone='danger']:hover {
+      background: color-mix(in oklab, var(--color-danger) 10%, transparent);
+    }
+  }
+
+  /* Active — cancel hover lift, add gentle press */
+  [data-ui='button']:not([disabled])[data-state='idle']:active {
+    transform: translateY(0);
+    filter: brightness(0.98);
+  }
+
+  /* Focus — :focus-visible ring uses --ring-accent (fallback blends accent for contrast) */
+  [data-ui='button']:focus-visible {
+    outline: 2px solid var(--ring-accent, color-mix(in oklab, var(--color-accent) 85%, white 15%));
+    outline-offset: 2px;
+  }
+
+  /* States — loading (progress), disabled (no pointer events to avoid double submits) */
+  [data-ui='button'][data-state='loading'] {
+    cursor: progress;
+  }
+  [data-ui='button'][data-state='disabled'],
+  [data-ui='button'][disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}

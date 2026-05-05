@@ -1,0 +1,195 @@
+/* ─────────────────────────────────────────────────────────────
+   Garden UI — Card skin (opt‑in)
+   Whisper: "surfaces should invite, not insist." 🌬️
+
+   Purpose
+     • Selector-only skin for the headless Card primitive.
+     • Driven by Garden tokens; no hardcoded hex.
+
+   Data API
+     • [data-ui='card']                        — root
+     • [data-variant='plain|elev|glow|outline|inset|ghost']        — depth/outline semantics
+     • [data-padding='none|sm|md|lg']          — inner spacing
+     • [data-tone='subtle|accent|positive|warning|danger'] — ring/outline tone (optional)
+     • [data-depth='inherit|0|1|2|3']         — shadow depth passthrough
+
+   A11y
+     • Card is presentational by default; semantics come from the element you render.
+     • If interactive (link/button), ensure a visible focus style (see [data-interactive]).
+
+   Notes
+     • Base uses --color-elev with border + depth token; 'plain' swaps to --color-surface.
+     • 'glow' draws an accent outline using --ring-accent (with safe fallback).
+     • Keep motion subtle; any reveal/hover effects belong in the app layer.
+     • Tokens: --surface, --elev, --text, --border, --sheet-radius, --shadow-depth-*, --ring-accent (optional).
+   ──────────────────────────────────────────────────────────── */
+@layer components {
+  /* Base — tokenized surface, border, and depth */
+  [data-ui='card'] {
+    border-radius: var(--sheet-radius, var(--radius-2xl));
+    border: 1px solid var(--border);
+    background: var(--elev);
+    box-shadow: var(--shadow-depth-2, 0 6px 18px -6px rgb(0 0 0 / 0.2));
+    color: var(--text);
+    position: relative; /* allow ::before grain overlay */
+    isolation: isolate; /* keep overlays local */
+    overflow: clip; /* prevent bleed on rounded corners */
+  }
+
+  /* Variants — plain / elev / glow / outline / inset / ghost */
+  [data-ui='card'][data-variant='plain'] {
+    background: var(--surface);
+    box-shadow: none;
+  }
+
+  [data-ui='card'][data-variant='elev'] {
+    /* same as base; kept for clarity */
+  }
+
+  [data-ui='card'][data-variant='glow'] {
+    outline: 2px solid var(--ring-accent, color-mix(in oklab, var(--color-accent) 85%, white 15%));
+    outline-offset: 0;
+  }
+
+  /* outline — clear surface with crisp border, no shadow */
+  [data-ui='card'][data-variant='outline'] {
+    background: transparent;
+    border-color: color-mix(in oklab, var(--border) 75%, transparent);
+    box-shadow: none;
+  }
+
+  /* inset — “well” feel via subtle inner lines */
+  [data-ui='card'][data-variant='inset'] {
+    background: var(--surface);
+    /* remove outer depth, create a gentle inner well */
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), inset 0 -1px 0 rgb(0 0 0 / 0.08);
+  }
+
+  /* ghost — barely-there surface; awakens on hover/focus if interactive */
+  [data-ui='card'][data-variant='ghost'] {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+  [data-ui='card'][data-variant='ghost'][data-interactive='true']:hover,
+  [data-ui='card'][data-variant='ghost'][data-interactive='true']:focus-visible {
+    background: color-mix(in oklab, var(--surface) 65%, transparent);
+    border-color: color-mix(in oklab, var(--border) 85%, transparent);
+    box-shadow: var(--shadow-depth-1, 0 4px 14px -6px rgb(0 0 0 / 0.22));
+  }
+
+  /* Ambient grain overlay — scales with --grain-strength (0..1)
+     Uses an inline SVG fractal noise tile; blended via multiply.
+     Disabled automatically when --grain-strength = 0.
+  */
+  [data-ui='card']::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0; /* behind content (before → content → after) */
+    opacity: clamp(0, var(--grain-strength, 0), 0.35);
+    /* size controlled by --grain-size (px), defaults to 140px */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='1'/></svg>");
+    background-size: var(--grain-size, 140px) var(--grain-size, 140px);
+    background-repeat: repeat;
+    mix-blend-mode: multiply;
+    transition: opacity var(--duration-snug, 160ms) var(--ease-soft, ease);
+  }
+  /* Slight lift on hover for interactive cards */
+  [data-ui='card'][data-interactive='true']:hover::before,
+  [data-ui='card'][data-interactive='true']:focus-visible::before {
+    opacity: clamp(0, calc(var(--grain-strength, 0) * 1.15), 0.42);
+  }
+  /* Skip grain for ghost variant (transparent surface) */
+  [data-ui='card'][data-variant='ghost']::before {
+    opacity: 0 !important;
+  }
+  /* Also skip grain for outline variant (transparent surface) */
+  [data-ui='card'][data-variant='outline']::before {
+    opacity: 0 !important;
+  }
+
+  /* Padding scale — none | sm | md | lg */
+  [data-ui='card'][data-padding='none'] {
+    padding: 0;
+  }
+  [data-ui='card'][data-padding='sm'] {
+    padding: 0.75rem;
+  }
+  [data-ui='card'][data-padding='md'] {
+    padding: 1rem;
+  }
+  [data-ui='card'][data-padding='lg'] {
+    padding: 1.5rem;
+  }
+
+  /* Depth passthrough — opt-in shadow control (syncs with Pad depth) */
+  [data-ui='card']:not([data-variant='plain'])[data-depth='inherit'] {
+    /* Use container-provided depth variable when available */
+    box-shadow: var(--depth-shadow, var(--shadow-depth-2));
+  }
+  [data-ui='card']:not([data-variant='plain'])[data-depth='0'] {
+    box-shadow: var(--shadow-depth-0);
+  }
+  [data-ui='card']:not([data-variant='plain'])[data-depth='1'] {
+    box-shadow: var(--shadow-depth-1);
+  }
+  [data-ui='card']:not([data-variant='plain'])[data-depth='2'] {
+    box-shadow: var(--shadow-depth-2);
+  }
+  [data-ui='card']:not([data-variant='plain'])[data-depth='3'] {
+    box-shadow: var(--shadow-depth-3);
+  }
+
+  /* Tone → focus/outline ring color variable (used by :focus-visible & glow) */
+  [data-ui='card'][data-tone='subtle'] {
+    --ring-accent: color-mix(in oklab, var(--color-text) 80%, white 20%);
+  }
+  [data-ui='card'][data-tone='accent'] {
+    --ring-accent: color-mix(in oklab, var(--color-accent) 85%, white 15%);
+  }
+  [data-ui='card'][data-tone='positive'] {
+    --ring-accent: color-mix(in oklab, var(--color-positive) 85%, white 15%);
+  }
+  [data-ui='card'][data-tone='warning'] {
+    --ring-accent: color-mix(in oklab, var(--color-warning) 85%, white 15%);
+  }
+  [data-ui='card'][data-tone='danger'] {
+    --ring-accent: color-mix(in oklab, var(--color-danger) 85%, white 15%);
+  }
+
+  /* Optional: interactive hover/active soften (opt-in via data-interactive) */
+  [data-ui='card'][data-interactive='true'] {
+    transition: filter var(--duration-snug, 160ms) var(--ease-soft, ease), box-shadow var(--duration-snug, 160ms) var(--ease-soft, ease);
+  }
+  [data-ui='card'][data-interactive='true']:hover {
+    filter: brightness(1.02);
+  }
+  [data-ui='card'][data-interactive='true']:active {
+    filter: brightness(0.98);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-ui='card'][data-interactive='true'] {
+      transition: none;
+    }
+  }
+
+  /* Optional: interactive focus (opt-in via data-interactive) */
+  [data-ui='card'][data-interactive='true']:focus-visible {
+    outline: 2px solid var(--ring-accent, color-mix(in oklab, var(--color-accent) 85%, white 15%));
+    outline-offset: 2px;
+  }
+
+  /* Disabled — dim + block interaction (opt-in interactive only) */
+  [data-ui='card'][data-interactive='true'][aria-disabled='true'],
+  a[data-ui='card'][aria-disabled='true'],
+  button[data-ui='card'][disabled] {
+    opacity: 0.55;
+    filter: none !important;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}

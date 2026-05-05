@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "title": "Despre Gratia",
+    "description": "Înțelegerea Gratia: Public, Shared, Sealed și mentenanța câmpului"
+  },
+  "header": {
+    "title": "Despre Gratia",
+    "subtitle": "Un spațiu de practică pentru a nota ce contează. Fără presiune de creștere. Fără bucle de atenție."
+  },
+  "whatIs": {
+    "title": "Ce este Gratia",
+    "p1": "Gratia este un spațiu de practică. Notezi momente, gânduri sau observații fără a aștepta propagare accelerată sau recompensă algoritmică.",
+    "p2": "Are trei straturi de vizibilitate — Public, Shared și Sealed — ca să controlezi cine vede ce. Nimic nu e monetizat. Tăcerea e mereu validă."
+  },
+  "layers": {
+    "title": "Public / Shared / Sealed",
+    "public": {
+      "title": "Public",
+      "body": "Oricine poate citi. Limbaj simplu și clar. Stratul acesta e pentru idei pe care le-ai spune liniștit într-o piață."
+    },
+    "shared": {
+      "title": "Shared",
+      "body": "Vizibil pentru oamenii pe care îi inviți. Mai mult context, mai multă densitate simbolică. Tu alegi cine intră aici."
+    },
+    "sealed": {
+      "title": "Sealed",
+      "body": "Privat. Doar tu. Aici scrii pentru tine — fără audiență, fără performance."
+    }
+  },
+  "agency": {
+    "title": "Autonomie & consimțământ",
+    "p1": "Gratia respectă limitele. Tu alegi ce publici, pe cine inviți și când rămâi în tăcere. Nu există tipare întunecate care să te împingă să distribui mai mult decât vrei.",
+    "p2": "Îți poți exporta datele oricând. Poți șterge definitiv. Scrisul tău îți aparține ție, nu platformei."
+  },
+  "export": {
+    "title": "Limite de export",
+    "p1": "Îți poți exporta conținutul ca date structurate — JSON, Markdown sau CSV. Îl iei cu tine dacă vrei. Fără blocare.",
+    "p2": "Gratia nu revendică proprietate asupra cuvintelor tale. Câmpul există ca să-ți servească practica, nu să-ți captureze atenția."
+  },
+  "maintenance": {
+    "title": "Mentenanța câmpului",
+    "p1": "Gratia e ținută ca un câmp fără scop lucrativ. Nu există ceas de investitori care cere creștere sau implicare.",
+    "p2": "Hosting-ul poate fi susținut prin contribuții opționale. Dacă îți folosește, poți ajuta la mentenanță. Dacă nu, ești tot binevenit."
+  },
+  "mediumMode": {
+    "title": "Mod Medium",
+    "p1": "Modul Medium folosește tipografie monospațiată ca să creeze spațiu între tine și text.",
+    "sample": {
+      "date": "2025-01-15 / dimineață",
+      "body": "Lumina a intrat diferit azi. Nu mai bine, nu mai rău — doar diferit. Am observat și am mers mai departe. Uneori e suficient.",
+      "sig": "— intrare sigilată"
+    }
+  },
+  "footer": {
+    "text": "Fără reclame. Fără urmărire. Fără flux algoritmic. Doar un câmp pentru practică."
+  }
+}

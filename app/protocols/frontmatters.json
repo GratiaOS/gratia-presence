@@ -1,0 +1,66 @@
+{
+  "frequency-first": {
+    "es": {
+      "title": "Frecuencia Primero",
+      "summary": "Un protocolo para sintonizar la presencia más allá de las apariencias.",
+      "tags": [
+        "protocolo",
+        "frecuencia",
+        "autenticidad"
+      ],
+      "updated": "2025-09-18T00:00:00.000Z"
+    },
+    "ro": {
+      "title": "Frecvența Mai Întâi",
+      "summary": "Un protocol pentru acordarea prezenței dincolo de aparențe.",
+      "tags": [
+        "protocol",
+        "frecvență",
+        "autenticitate"
+      ],
+      "updated": "2025-09-18T00:00:00.000Z"
+    },
+    "en": {
+      "title": "Frequency-First",
+      "summary": "A protocol for tuning presence beyond appearances.",
+      "tags": [
+        "protocol",
+        "frequency",
+        "authenticity"
+      ],
+      "updated": "2025-09-18T00:00:00.000Z"
+    }
+  },
+  "splinters-gift": {
+    "es": {
+      "title": "El Regalo de la Astilla",
+      "summary": "Protocolo para reconocer, honrar e integrar transmisiones.",
+      "tags": [
+        "protocolo",
+        "presencia",
+        "duelo"
+      ],
+      "updated": "2025-09-18T00:00:00.000Z"
+    },
+    "ro": {
+      "title": "Darul Ciobului",
+      "summary": "Protocol pentru recunoașterea, omagierea și integrarea transmisiilor.",
+      "tags": [
+        "protocol",
+        "prezență",
+        "doliu"
+      ],
+      "updated": "2025-09-18T00:00:00.000Z"
+    },
+    "en": {
+      "title": "The Splinter's Gift",
+      "summary": "Protocol for recognizing, honoring, and integrating transmissions.",
+      "tags": [
+        "protocol",
+        "presence",
+        "grief"
+      ],
+      "updated": "2025-09-18T00:00:00.000Z"
+    }
+  }
+}

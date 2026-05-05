@@ -1,0 +1,1570 @@
+@import '@gratiaos/tokens/theme.css';
+@import 'tailwindcss';
+@import '@gratiaos/ui/styles/base.css' layer(components);
+@plugin '@tailwindcss/typography';
+
+@font-face {
+  font-family: 'NG Funkhaus';
+  src:
+    url('/fonts/NG-Funkhaus.woff2') format('woff2'),
+    url('/fonts/NG-Funkhaus.woff') format('woff'),
+    url('/fonts/NG-Funkhaus.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Typography (defaults + fallbacks)                                           */
+/* -------------------------------------------------------------------------- */
+
+:root {
+  /* UI / reading */
+  --font-ui:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, 'Apple Color Emoji',
+    'Segoe UI Emoji';
+
+  /* Serif / editorial */
+  --font-serif: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+
+  /* Mono / codex */
+  --font-mono:
+    'NG Funkhaus', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    monospace;
+  --font-funkhaus: var(--font-mono);
+
+  /* Spatial / broadcast (Codex :: Vienna) */
+  --font-spatial: var(--font-mono);
+  --tracking-spatial: 0.01em;
+
+  /* Display defaults to the editorial serif face */
+  --font-display: var(--font-serif);
+
+  /* Garden token aliases (keep legacy tone vars mapped to tokens) */
+  --tone-surface: var(--color-surface, #0f1317);
+  /* Prefer explicit ink tokens when available (M3 uses --color-ink in some skins) */
+  --tone-ink: var(--color-ink, var(--color-text, #e6edf5));
+  --tone-accent: var(--color-accent, #3ed0c8);
+  --tone-border: var(--color-border);
+  --accent: var(--color-accent);
+
+  /* Pad runtime mappings (M3-style) — derive coherent surfaces from theme tones */
+  --pad-bg-0: color-mix(in oklch, var(--tone-surface, #0f1317) 94%, var(--tone-ink, #e6edf5));
+  --pad-bg-1: color-mix(in oklch, var(--tone-surface, #0f1317) 90%, var(--tone-ink, #e6edf5));
+  --pad-ink-muted: color-mix(in oklch, var(--tone-ink, #e6edf5) 65%, var(--tone-surface, #0f1317));
+  --pad-border-soft: color-mix(in oklch, var(--tone-ink, #e6edf5) 8%, var(--tone-surface, #0f1317));
+  --pad-focus-ring: color-mix(in oklch, var(--tone-accent, #3ed0c8) 70%, transparent);
+
+  /* Surfaces & text (portable targets for Gratia/Firecircle) */
+  --pad-surface: var(--pad-bg-0, var(--color-surface));
+  --pad-elev: var(--pad-bg-1, var(--color-elev, var(--color-surface)));
+  --pad-border: var(--pad-border-soft, var(--color-border));
+  --pad-text: var(--tone-ink, var(--color-text));
+  --pad-text-muted: var(--pad-ink-muted, var(--color-muted));
+
+  /* Accent system */
+  --pad-accent: var(--tone-accent, var(--color-accent));
+  --pad-onaccent: var(--color-on-accent, white);
+
+  /* Shape & depth */
+  --pad-radius: var(--sheet-radius, var(--radius-2xl, 1.5rem));
+  --pad-shadow: var(--shadow-card, 0 6px 18px -6px rgb(0 0 0 / 0.2));
+  --pad-ring: var(--ring-accent, color-mix(in oklab, var(--pad-accent) 85%, white 15%));
+
+  /* Project aliases (used throughout CSS/components) */
+  --font-gratia: var(--font-display);
+  --font-selari: var(--font-ui);
+  --font-bilute: var(--font-mono);
+}
+
+/* SUN tuning — slightly warmer, more separation between base/elev/border (closer to M3 feel) */
+:root[data-skin-id='SUN'] {
+  --pad-bg-0: color-mix(in oklch, var(--tone-surface) 97%, var(--tone-ink));
+  --pad-bg-1: color-mix(in oklch, var(--tone-surface) 92%, var(--tone-ink));
+  --pad-ink-muted: color-mix(in oklch, var(--tone-ink) 58%, var(--tone-surface));
+  --pad-border-soft: color-mix(in oklch, var(--tone-ink) 10%, var(--tone-surface));
+  --pad-shadow: var(--shadow-card, 0 10px 28px -12px rgb(0 0 0 / 0.22));
+}
+
+/* M3 drift layer — PM-only via data-pad-drift="m3" */
+:root[data-pad-drift='m3'] {
+  --tone-drift-warmth: 0.5;
+  --tone-drift-hue: 0;
+
+  --tone-surface: color-mix(
+    in oklab,
+    var(--color-surface) calc(94% - (var(--tone-drift-warmth) * 6%)),
+    var(--color-accent)
+  );
+  --tone-ink: color-mix(
+    in oklab,
+    var(--color-text) calc(88% + (var(--tone-drift-warmth) * 6%)),
+    white
+  );
+  --tone-accent: color-mix(
+    in oklab,
+    var(--color-accent) calc(85% - (var(--tone-drift-warmth) * 5%)),
+    white
+  );
+}
+
+/* Typography toggle (B): mono / Codex */
+:root[data-typo='mono'] {
+  --font-display: var(--font-mono);
+  --font-gratia: var(--font-mono);
+  --tracking-spatial: 0.02em;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--pad-surface);
+  color: var(--pad-text);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 180ms ease-out,
+    color 180ms ease-out;
+}
+
+.whisper-soft {
+  opacity: 0.7;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+}
+
+@utility bg-surface {
+  background-color: var(--pad-surface);
+}
+
+@utility bg-accent {
+  background-color: var(--color-accent);
+}
+
+@utility text-body {
+  color: var(--pad-text);
+}
+
+@utility text-accent {
+  color: var(--color-accent);
+}
+
+@utility text-muted {
+  color: var(--pad-text-muted);
+}
+
+@utility font-gratia {
+  font-family: var(--font-gratia);
+}
+
+@utility font-selari {
+  font-family: var(--font-selari);
+}
+
+@utility font-bilute {
+  font-family: var(--font-bilute);
+}
+
+@utility font-ui {
+  font-family: var(--font-ui);
+}
+
+@utility font-mono {
+  font-family: var(--font-mono);
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+/* Pattern Mirror: readable long-form blocks (Medium mode / reflection exports) */
+.pm-longform {
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+[data-typo='mono'] .pm-longform {
+  letter-spacing: 0.02em;
+}
+
+@utility text-title-gratia {
+  font-family: var(--font-gratia);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+@utility text-subtle-bilute {
+  font-family: var(--font-bilute);
+  letter-spacing: 0.015em;
+}
+
+@utility prose-gratia {
+  --tw-prose-body: var(--color-text);
+  --tw-prose-headings: var(--color-accent);
+  --tw-prose-lead: var(--color-muted);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-bold: var(--color-text);
+  --tw-prose-counters: var(--color-accent);
+  --tw-prose-bullets: var(--color-accent);
+  --tw-prose-hr: var(--color-border);
+  --tw-prose-quotes: var(--color-text);
+  --tw-prose-quote-borders: var(--color-border);
+  --tw-prose-captions: var(--color-muted);
+  --tw-prose-code: var(--color-text);
+  --tw-prose-pre-code: var(--color-text);
+  --tw-prose-pre-bg: var(--color-surface);
+  --tw-prose-th-borders: var(--color-border);
+  --tw-prose-td-borders: var(--color-border);
+  --tw-prose-invert-body: var(--color-text);
+  --tw-prose-invert-headings: var(--color-accent);
+  --tw-prose-invert-lead: var(--color-muted);
+  --tw-prose-invert-links: var(--color-accent);
+  --tw-prose-invert-bold: var(--color-text);
+  --tw-prose-invert-counters: var(--color-accent);
+  --tw-prose-invert-bullets: var(--color-accent);
+  --tw-prose-invert-hr: var(--color-border);
+  --tw-prose-invert-quotes: var(--color-text);
+  --tw-prose-invert-quote-borders: var(--color-border);
+  --tw-prose-invert-captions: var(--color-muted);
+  --tw-prose-invert-code: var(--color-text);
+  --tw-prose-invert-pre-code: var(--color-text);
+  --tw-prose-invert-pre-bg: var(--color-surface);
+  --tw-prose-invert-th-borders: var(--color-border);
+  --tw-prose-invert-td-borders: var(--color-border);
+}
+
+@layer components {
+  .scene-root {
+    animation: scene-fade-in 420ms ease-out;
+  }
+  .scene-shell {
+    border-radius: 24px;
+  }
+
+  /* Landing hero mark */
+  .landing-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.75rem;
+  }
+
+  .landing-hero-mark {
+    margin-top: 4rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .landing-hero-mark-inner {
+    width: 112px;
+    height: 112px;
+    animation: gratia-mark-breathe 6s ease-in-out infinite;
+    transition: transform 2400ms ease-in-out;
+  }
+
+  /* Mark motion — Suave Bloom halo */
+  .mark-motion-suave {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mark-motion-suave::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--color-accent) 40%, transparent),
+      transparent
+    );
+    opacity: 0.05;
+    filter: blur(12px);
+    animation: mark-suave-halo 6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .mark-motion-suave img {
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes mark-suave-halo {
+    0%,
+    100% {
+      opacity: 0.02;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.05;
+      transform: scale(1.04);
+    }
+  }
+
+  /* Organic scene entrance with gravity and clarity */
+  @keyframes sceneIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.99);
+      filter: blur(2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  .animate-scene-in {
+    animation: sceneIn var(--scene-enter-duration, 500ms) cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    opacity: 0; /* Start invisible, wait for delay */
+  }
+
+  @keyframes scene-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gratia-mark-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.04);
+    }
+  }
+
+  .link-default {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+  }
+  .link-default:hover {
+    color: var(--color-text);
+  }
+
+  .border-default {
+    border-color: var(--color-border);
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /* Codex :: Vienna (broadcast field)                                           */
+  /* -------------------------------------------------------------------------- */
+
+  /*
+    Two ways to activate Vienna typography:
+    - `.codex-vienna` (legacy / class based)
+    - `data-codex="vienna" data-typo="spatial"` (preferred / semantic)
+  */
+  .codex-vienna,
+  [data-codex='vienna'][data-typo='spatial'] {
+    font-family: var(--font-spatial, var(--font-mono));
+    letter-spacing: var(--tracking-spatial, 0.01em);
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+
+    /* broadcast feel: slightly calmer rhythm without becoming “control panel” */
+    word-spacing: 0.02em;
+    font-variant-ligatures: contextual common-ligatures;
+  }
+
+  /* Keep headings in the same broadcast field unless a component overrides */
+  .codex-vienna :where(h1, h2, h3, h4),
+  [data-codex='vienna'][data-typo='spatial'] :where(h1, h2, h3, h4) {
+    font-family: inherit;
+    letter-spacing: inherit;
+  }
+
+  /* Calmer link behaviour inside Vienna */
+  .codex-vienna a,
+  [data-codex='vienna'][data-typo='spatial'] a {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition:
+      color 180ms ease,
+      text-decoration-color 180ms ease;
+  }
+
+  .codex-vienna a:hover,
+  [data-codex='vienna'][data-typo='spatial'] a:hover {
+    text-decoration-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  }
+
+  /* If we’re in spatial mode, give Vienna a tiny bit more tracking */
+  [data-codex='vienna'][data-typo='spatial'] {
+    letter-spacing: max(var(--tracking-spatial, 0.01em), 0.018em);
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /* Pattern Mirror: route styles moved to globals to avoid FOUC                  */
+  /* -------------------------------------------------------------------------- */
+
+  /* Page field aura (very soft, Pad-like). Attach this class to the PM page root. */
+  .pm-page {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    min-height: 100vh;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+  }
+
+  .pm-page-inner {
+    width: 100%;
+    max-width: 48rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .pm-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .pm-lotus-shell {
+    border-radius: 9999px;
+    padding: 0.75rem;
+    background: color-mix(in oklab, var(--pad-accent) 12%, transparent);
+    box-shadow: inset 0 1px 0 color-mix(in oklab, var(--pad-text) 8%, transparent);
+  }
+
+  :root[data-skin-id='MOON'] .pm-lotus-shell {
+    background: color-mix(in oklab, var(--pad-surface) 70%, transparent);
+    box-shadow: 0 0 22px color-mix(in oklab, var(--pad-text) 12%, transparent);
+    outline: 1px solid color-mix(in oklab, var(--pad-border) 70%, transparent);
+  }
+
+  .pm-lotus-mark {
+    display: inline-flex;
+    font-size: 1.25rem;
+    transition: transform 200ms ease;
+  }
+
+  .pm-page[data-input-focused='true'] .pm-lotus-mark,
+  .pm-page[data-results-hovered='true'] .pm-lotus-mark {
+    transform: translateY(-1px) scale(1.04);
+  }
+
+  .pm-mirror-whisper {
+    margin-top: 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    color: var(--pad-text-muted);
+  }
+
+  /* Single slow light in the page field (subtle; not the input mirror). */
+  .pm-page::before {
+    content: '';
+    position: absolute;
+    inset: -12vh -12vw;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.14;
+    transition:
+      opacity 220ms ease,
+      transform 520ms ease,
+      filter 520ms ease;
+  }
+
+  .pm-page::before {
+    background: radial-gradient(
+      1200px 760px at 30% 20%,
+      color-mix(in oklab, var(--pad-accent) 12%, transparent) 0%,
+      transparent 70%
+    );
+    filter: saturate(1.02) brightness(1.01);
+  }
+
+  /* Lift the field slightly when the user engages (focus/hover). */
+  .pm-page:focus-within::before,
+  .pm-page:hover::before {
+    opacity: 0.18;
+    transform: translate3d(0, -6px, 0);
+    filter: saturate(1.06) brightness(1.03);
+  }
+
+  /* Ensure PM content layers above the aura */
+  .pm-page > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Animatable light positions (subtle, not club) */
+  @property --pm-l1x {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 28%;
+  }
+  @property --pm-l1y {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 22%;
+  }
+  @property --pm-l2x {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 72%;
+  }
+  @property --pm-l2y {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 78%;
+  }
+
+  .pm-toolbar-shell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* gives us a larger, invisible hover area so the reveal feels like fog, not a tiny target */
+    padding: 0.25rem 0.15rem;
+  }
+
+  /* Soft hover field around the toolbar ("fade-in the wall") */
+  .pm-toolbar-shell::before {
+    content: '';
+    position: absolute;
+    inset: -14px;
+    border-radius: 9999px;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      520px 220px at 50% 50%,
+      color-mix(in oklab, var(--pad-accent) 10%, transparent),
+      transparent 70%
+    );
+    filter: blur(14px);
+    transition: opacity 640ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  [data-pm-has-text='true'] .pm-toolbar-shell:hover::before,
+  [data-pm-has-text='true'] .pm-toolbar-shell:focus-within::before {
+    opacity: 0.55;
+  }
+
+  /* Auto-hide toolbar after first character; return on hover/focus (calmer/organic version) */
+  .pm-toolbar-auto {
+    transition:
+      opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 720ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform-origin: center;
+    will-change: opacity, filter, transform;
+  }
+
+  /* When we have text, keep toolbar as a faint "wall" presence (not gone) */
+  [data-pm-has-text='true'] .pm-toolbar-shell .pm-toolbar-auto {
+    opacity: 0.18;
+    transform: translate3d(0, 0, 0) scale(0.996);
+    pointer-events: none;
+    filter: blur(2.5px) saturate(0.96);
+  }
+
+  [data-pm-has-text='true'] .pm-toolbar-shell:hover .pm-toolbar-auto,
+  [data-pm-has-text='true'] .pm-toolbar-shell:focus-within .pm-toolbar-auto {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    pointer-events: auto;
+    filter: none;
+  }
+
+  .pm-sigil {
+    position: absolute;
+    left: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%) translate3d(0, 0, 0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    background: color-mix(in oklab, var(--pad-surface) 70%, transparent);
+    border: 1px solid color-mix(in oklab, var(--pad-border) 70%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--pad-accent) 18%, transparent),
+      0 10px 24px color-mix(in oklab, var(--pad-accent) 10%, transparent);
+    opacity: 1;
+    pointer-events: auto;
+    transition:
+      opacity 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .pm-toolbar {
+    border: 1px solid color-mix(in oklab, var(--pad-border) 68%, transparent);
+    background: color-mix(in oklab, var(--pad-surface) 86%, transparent);
+    border-radius: 9999px;
+    box-shadow: var(--inset-shadow-depth-1), var(--pad-shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-size: 0.75rem;
+  }
+
+  .pm-toolbar[data-depth='2'] {
+    box-shadow: var(--inset-shadow-depth-1), var(--shadow-depth-2, var(--pad-shadow));
+  }
+
+  .pm-pill[data-active='true'] {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--pad-accent) 44%, transparent),
+      0 10px 22px color-mix(in oklab, var(--pad-accent) 12%, transparent);
+  }
+
+  .pm-pill:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1.5px color-mix(in oklab, var(--pad-accent) 65%, transparent),
+      0 0 0 6px color-mix(in oklab, var(--pad-accent) 20%, transparent);
+  }
+
+  /* Micro-motion: pills feel like a soft nozzle selector, not a hard toggle */
+
+  .pm-pill {
+    transition:
+      transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 240ms ease,
+      opacity 240ms ease;
+  }
+
+  .pm-pill:active {
+    transform: translate3d(0, 1px, 0) scale(0.99);
+  }
+
+  /* Pattern Mirror: mood chip (🌸) — tiny, on-the-go, not a control panel */
+  .pm-mood-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 32px;
+    padding: 0 0.55rem;
+    border-radius: 9999px;
+
+    border: 1px solid color-mix(in oklab, var(--pad-border) 62%, transparent);
+    background: color-mix(in oklab, var(--pad-surface) 86%, transparent);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--pad-text) 5%, transparent),
+      0 10px 24px color-mix(in oklab, var(--pad-text) 7%, transparent);
+
+    font-size: 0.75rem;
+    line-height: 1;
+    color: var(--pad-text);
+
+    opacity: 0.92;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+
+    transition:
+      opacity 220ms ease,
+      transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 320ms ease,
+      border-color 220ms ease,
+      background-color 220ms ease,
+      filter 320ms ease;
+  }
+
+  .pm-mood-chip::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    border-radius: 9999px;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      520px 220px at 50% 50%,
+      color-mix(in oklab, var(--pad-accent) 10%, transparent),
+      transparent 70%
+    );
+    filter: blur(14px);
+    transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .pm-mood-chip:hover {
+    opacity: 1;
+    filter: saturate(1.02) brightness(1.01);
+  }
+
+  .pm-mood-chip:hover::before {
+    opacity: 0.45;
+  }
+
+  .pm-mood-chip:active {
+    transform: translate3d(0, 1px, 0) scale(0.995);
+  }
+
+  .pm-mood-chip:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1.5px color-mix(in oklab, var(--color-accent) 65%, transparent),
+      0 0 0 6px color-mix(in oklab, var(--color-accent) 20%, transparent),
+      inset 0 1px 0 color-mix(in oklab, var(--color-text) 5%, transparent),
+      0 10px 24px color-mix(in oklab, var(--color-text) 7%, transparent);
+  }
+
+  .pm-mood-chip-icon {
+    opacity: 0.85;
+    transform: translateY(-0.5px);
+  }
+
+  .pm-mood-chip-steps {
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+  }
+
+  /* Slightly different “feel” per mood, still subtle */
+  [data-nozzle-mood='soft'] .pm-mood-chip {
+    background: color-mix(in oklab, var(--color-surface) 88%, transparent);
+  }
+  [data-nozzle-mood='focused'] .pm-mood-chip {
+    background: color-mix(in oklab, var(--color-surface) 84%, transparent);
+    border-color: color-mix(in oklab, var(--color-border) 70%, transparent);
+  }
+  [data-nozzle-mood='celebratory'] .pm-mood-chip {
+    border-color: color-mix(in oklab, var(--color-accent) 28%, transparent);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--color-text) 5%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--color-accent) 22%, transparent),
+      0 12px 28px color-mix(in oklab, var(--color-accent) 10%, transparent);
+  }
+
+  @media (max-width: 420px) {
+    .pm-mood-chip {
+      height: 30px;
+      padding: 0 0.5rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .pm-mobile-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .pm-mobile-cta {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .pm-idle-whisper--mobile {
+      width: 100%;
+    }
+
+    .pm-mobile-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  /* When auto-hidden, keep it as a faint presence instead of vanishing */
+  [data-pm-has-text='true'] .pm-toolbar-shell .pm-toolbar {
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--pad-text) 5%, transparent),
+      0 8px 22px color-mix(in oklab, var(--pad-text) 7%, transparent);
+  }
+
+  .pm-sep {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25rem;
+    opacity: 0.6;
+  }
+
+  .pm-radio-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .pm-radio-controls[data-radio-on='false'] .pm-radio-select,
+  .pm-radio-controls[data-radio-on='false'] .pm-radio-range {
+    opacity: 0.55;
+  }
+
+  .pm-radio-select {
+    appearance: none;
+    background: color-mix(in oklab, var(--pad-surface) 80%, transparent);
+    border: 1px solid color-mix(in oklab, var(--pad-border) 60%, transparent);
+    border-radius: 9999px;
+    color: inherit;
+    font: inherit;
+    padding: 0.35rem 0.6rem;
+    line-height: 1;
+  }
+
+  .pm-radio-select:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1.5px color-mix(in oklab, var(--pad-accent) 55%, transparent),
+      0 0 0 6px color-mix(in oklab, var(--pad-accent) 16%, transparent);
+  }
+
+  .pm-radio-range {
+    width: 90px;
+    accent-color: var(--pad-accent);
+  }
+
+  .pm-input {
+    position: relative;
+    border-radius: 0 !important;
+  }
+
+  .pm-input-wrap {
+    position: relative;
+    isolation: isolate;
+    border-radius: 0 !important;
+    overflow: hidden;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+
+    /* Mirror surface: quiet glass (no border; edge is implied) */
+    background:
+      /* soft top haze */
+      radial-gradient(
+        140% 120% at 50% 0%,
+        color-mix(in oklab, var(--pad-text) 6%, transparent),
+        transparent 58%
+      ),
+      /* soft bottom haze */
+        radial-gradient(
+          140% 140% at 50% 120%,
+          color-mix(in oklab, var(--pad-text) 5%, transparent),
+          transparent 62%
+        ),
+      /* base */ color-mix(in oklab, var(--pad-surface) 92%, transparent);
+
+    box-shadow:
+      /* inner edge (very subtle) */
+      inset 0 0 0 1px color-mix(in oklab, var(--pad-border) 62%, transparent),
+      /* gentle inner lift */ inset 0 1px 0 color-mix(in oklab, var(--pad-text) 4%, transparent);
+
+    /* Two moving lights (start positions) */
+    --pm-l1x: 28%;
+    --pm-l1y: 22%;
+    --pm-l2x: 72%;
+    --pm-l2y: 78%;
+
+    transition:
+      box-shadow 180ms ease,
+      background-color 180ms ease,
+      --pm-l1x 520ms ease,
+      --pm-l1y 520ms ease,
+      --pm-l2x 620ms ease,
+      --pm-l2y 620ms ease;
+  }
+
+  .pm-input-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    /* Single soft light (accent), controlled by animatable vars */
+    background: radial-gradient(
+      560px 320px at var(--pm-l1x) var(--pm-l1y),
+      color-mix(in oklab, var(--pad-accent) 14%, transparent),
+      transparent 70%
+    );
+
+    opacity: 0.12;
+    filter: blur(0.1px);
+  }
+
+  .pm-input-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    /* faint grain/veil so the mirror feels alive but quiet */
+    background: radial-gradient(
+      900px 420px at 50% 50%,
+      color-mix(in oklab, var(--pad-text) 4%, transparent),
+      transparent 70%
+    );
+    opacity: 0.08;
+  }
+
+  .pm-textarea {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    resize: none;
+    border-radius: 0 !important;
+
+    /* Let the wrap be the mirror */
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -webkit-text-fill-color: var(--pad-text);
+    caret-color: var(--pad-text);
+    font-family: var(--font-display);
+
+    padding: 1.05rem 1.1rem;
+    line-height: 1.65;
+    letter-spacing: 0.01em;
+    color: var(--pad-text);
+    outline: none;
+
+    transition:
+      color 160ms ease,
+      box-shadow 160ms ease,
+      transform 160ms ease;
+  }
+
+  /* Stronger mirror response on focus within */
+  .pm-input-wrap:focus-within {
+    --pm-l1x: 34%;
+    --pm-l1y: 18%;
+    --pm-l2x: 66%;
+    --pm-l2y: 84%;
+    box-shadow:
+      /* focus aura */
+      0 0 0 1.25px color-mix(in oklab, var(--pad-accent) 26%, transparent),
+      0 0 0 12px color-mix(in oklab, var(--pad-accent) 8%, transparent),
+      /* inner edge */ inset 0 0 0 1px color-mix(in oklab, var(--pad-accent) 18%, transparent),
+      inset 0 1px 0 color-mix(in oklab, var(--pad-text) 4%, transparent);
+  }
+
+  .pm-input-wrap:hover {
+    --pm-l1x: 24%;
+    --pm-l1y: 26%;
+    --pm-l2x: 76%;
+    --pm-l2y: 74%;
+  }
+
+  .pm-textarea::placeholder {
+    color: color-mix(in oklab, var(--pad-text-muted) 82%, transparent);
+  }
+
+  .pm-textarea:disabled {
+    opacity: 0.72;
+  }
+
+  /* Longform readability (Medium block) */
+  .pm-longform {
+    line-height: 1.65;
+    letter-spacing: 0.01em;
+  }
+
+  [data-typo='mono'] .pm-longform {
+    letter-spacing: 0.02em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pm-textarea {
+      transition: none;
+    }
+
+    .pm-idle-whisper {
+      transition: none;
+      filter: none;
+      transform: none;
+    }
+  }
+
+  .pm-input-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  /* Mobile quick win: keep Reveal (and 🌸) reachable without turning PM into a control panel */
+  .pm-reveal-sticky {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  /* On small screens, use in-flow layout for actions so it won’t overlap the textarea */
+  @media (max-width: 640px) {
+    .pm-reveal-sticky {
+      position: relative;
+      bottom: auto;
+      z-index: auto;
+      margin-top: 0.75rem;
+      padding: 0;
+
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    /* Keep safe-area spacing without overlaying the input */
+    .pm-page-inner {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  }
+
+  .pm-reveal-btn {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease,
+      box-shadow 200ms ease;
+  }
+
+  [data-pm-has-text='true'] .pm-reveal-btn {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .pm-reveal-btn:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1.5px color-mix(in oklab, var(--pad-accent) 65%, transparent),
+      0 0 0 6px color-mix(in oklab, var(--pad-accent) 20%, transparent);
+  }
+
+  /* Idle whisper bubble (appears after pause; click to reveal) */
+  .pm-idle-whisper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: min(46ch, 60vw);
+    padding: 0.45rem 0.65rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in oklab, var(--pad-border) 60%, transparent);
+    background: color-mix(in oklab, var(--pad-surface) 78%, transparent);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--pad-text) 5%, transparent),
+      0 12px 28px color-mix(in oklab, var(--pad-text) 8%, transparent);
+    color: var(--pad-text);
+    font-size: 0.75rem;
+    line-height: 1.2;
+
+    /* calm reveal: fade-in the wall (no slingshot) */
+    opacity: 0;
+    transform: translateY(4px);
+    filter: blur(0.2px);
+    pointer-events: none;
+    transition:
+      opacity 260ms ease,
+      transform 320ms ease,
+      filter 320ms ease,
+      box-shadow 520ms ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+  }
+
+  .pm-idle-whisper::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    border-radius: 9999px;
+    background: radial-gradient(
+      520px 220px at 20% 50%,
+      color-mix(in oklab, var(--pad-accent) 10%, transparent),
+      transparent 70%
+    );
+    opacity: 0.55;
+    filter: blur(10px);
+    pointer-events: none;
+  }
+
+  .pm-idle-whisper > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .pm-idle-whisper:hover {
+    filter: saturate(1.03) brightness(1.01);
+  }
+
+  .pm-idle-whisper:active {
+    transform: translate3d(0, 1px, 0) scale(0.997);
+  }
+
+  .pm-idle-whisper:disabled {
+    cursor: default;
+  }
+
+  .pm-idle-whisper:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1.5px color-mix(in oklab, var(--pad-accent) 55%, transparent),
+      0 0 0 8px color-mix(in oklab, var(--pad-accent) 16%, transparent),
+      inset 0 1px 0 color-mix(in oklab, var(--pad-text) 5%, transparent),
+      0 12px 28px color-mix(in oklab, var(--pad-text) 8%, transparent);
+  }
+
+  .pm-idle-whisper-icon {
+    opacity: 0.75;
+    transform: translateY(-0.5px);
+  }
+
+  .pm-idle-whisper-text {
+    color: color-mix(in oklab, var(--pad-text) 92%, var(--pad-text-muted));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* visible state (set by TSX via data attr) */
+  [data-pm-idle='true'] .pm-idle-whisper {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+    pointer-events: auto;
+  }
+
+  .pm-dev-hint {
+    margin-top: 0.5rem;
+    font-size: 0.6875rem;
+    color: var(--pad-text-muted);
+  }
+
+  .pm-results {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--pad-border);
+    background: var(--pad-elev);
+    color: var(--pad-text);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 10px 24px color-mix(in oklab, var(--pad-text) 8%, transparent);
+    transition:
+      box-shadow 220ms ease,
+      transform 220ms ease;
+  }
+
+  .pm-results[data-hovered='true'] {
+    box-shadow: var(--pad-shadow);
+    transform: translateY(-1px);
+  }
+
+  .pm-results-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .pm-results-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .pm-seeds {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pm-seeds-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--pad-text-muted);
+  }
+
+  .pm-seeds-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .pm-seed-badge {
+    cursor: pointer;
+  }
+
+  :root[data-skin-id='MOON'] .pm-seed-badge {
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-text) 8%, transparent);
+  }
+
+  .pm-seed-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .pm-seed-meta-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .pm-seed-meta-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .pm-seed-meta-close {
+    font-size: 0.6875rem;
+    color: var(--pad-text-muted);
+  }
+
+  .pm-seed-meta-close:hover {
+    color: var(--pad-text);
+  }
+
+  .pm-seed-meta-desc {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+
+  .pm-seed-meta-tone {
+    font-size: 0.6875rem;
+    color: var(--color-muted);
+  }
+
+  .pm-reflection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .pm-reflection-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
+  .pm-reflection-list {
+    list-style: disc;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .pm-tone {
+    padding-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+  }
+
+  .pm-tone-value {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .pm-cycles-whisper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .pm-true-step {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 0.5rem;
+  }
+
+  .pm-true-step-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pm-true-step-label {
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    opacity: 0.75;
+  }
+
+  .pm-true-step-prompt {
+    font-size: 1rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--color-text);
+  }
+
+  .pm-true-step-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pm-true-step-btn:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1.5px color-mix(in oklab, var(--color-accent) 65%, transparent),
+      0 0 0 6px color-mix(in oklab, var(--color-accent) 20%, transparent);
+  }
+
+  .pm-true-step-hint {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    opacity: 0.9;
+  }
+
+  .pm-saved-truth {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    border: 1px solid var(--color-border);
+  }
+
+  .pm-saved-truth-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
+  .pm-saved-truth-text {
+    font-size: 0.875rem;
+  }
+
+  .pm-medium {
+    border-top: 1px solid var(--color-border);
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .pm-medium-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .pm-medium-helper {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+
+  .pm-medium-copied {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--color-positive);
+  }
+
+  .pm-medium-comment {
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid color-mix(in oklab, var(--color-border) 60%, transparent);
+    background: color-mix(in oklab, var(--color-elev) 80%, transparent);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+    color: var(--color-text);
+    opacity: 0.9;
+    font-family: var(--font-ui);
+  }
+
+  .pm-error {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .pm-error-text {
+    font-size: 0.875rem;
+  }
+
+  .pm-error-btn:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1.5px color-mix(in oklab, var(--color-accent) 65%, transparent),
+      0 0 0 6px color-mix(in oklab, var(--color-accent) 20%, transparent);
+  }
+
+  .pm-pad-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: color-mix(in oklab, var(--color-border) 60%, transparent);
+  }
+
+  .pm-pad-card {
+    width: 100%;
+    max-width: 28rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border-radius: 1.5rem 1.5rem 0 0;
+    background: var(--color-elev);
+  }
+
+  .pm-pad-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pm-pad-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .pm-pad-textarea {
+    width: 100%;
+    resize: none;
+    background: transparent;
+    font-size: 0.875rem;
+    outline: none;
+  }
+
+  .pm-pad-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}
+
+@layer utilities {
+  .shadow-depth-0 {
+    box-shadow: var(--shadow-depth-0);
+  }
+  .shadow-depth-1 {
+    box-shadow: var(--shadow-depth-1);
+  }
+  .shadow-depth-2 {
+    box-shadow: var(--shadow-depth-2);
+  }
+  .shadow-depth-3 {
+    box-shadow: var(--shadow-depth-3);
+  }
+  .depth-ambient {
+    box-shadow: var(--shadow-depth-1);
+  }
+  .mood-glow {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--color-accent) 35%, transparent),
+      0 18px 40px color-mix(in oklab, var(--color-accent) 18%, transparent);
+  }
+  .whisper-ring {
+    transition:
+      box-shadow 200ms ease,
+      transform 200ms ease;
+  }
+  .whisper-ring:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1.5px color-mix(in oklab, var(--color-accent) 65%, transparent),
+      0 0 0 6px color-mix(in oklab, var(--color-accent) 20%, transparent);
+    transform: translateY(-1px);
+  }
+}
+
+@layer base {
+  /* Fallback for browsers without color-mix() support */
+  @supports not (color: color-mix(in oklch, black 50%, white)) {
+    :root {
+      --pad-surface: var(--tone-surface, var(--color-surface, #0f1317));
+      --pad-elev: var(--tone-surface, var(--color-surface, #0f1317));
+      --pad-border: var(--color-border, rgba(255, 255, 255, 0.08));
+      --pad-text: var(--tone-ink, var(--color-text, #e6edf5));
+      --pad-text-muted: var(--color-muted, rgba(230, 237, 245, 0.7));
+      --pad-focus-ring: color-mix(in oklab, var(--tone-accent, #3ed0c8) 35%, transparent);
+    }
+  }
+  :root[data-spirit='bear'] {
+    --grain-strength: 0.09;
+    --glow-intensity: 0.08;
+  }
+  :root[data-spirit='wolf'] {
+    --grain-strength: 0.12;
+    --glow-intensity: 0.11;
+  }
+  :root[data-spirit='lion'] {
+    --grain-strength: 0.14;
+    --glow-intensity: 0.16;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border-color: var(--color-border);
+  }
+
+  a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s;
+  }
+  a:hover {
+    color: var(--color-text);
+  }
+
+  button {
+    font-family: var(--font-selari);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  input:not(.pm-textarea),
+  textarea:not(.pm-textarea),
+  select {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--color-muted);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-selari);
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+  input:not(.pm-textarea):focus,
+  textarea:not(.pm-textarea):focus,
+  select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    background-color: var(--color-surface);
+  }
+
+  body,
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+  }
+}

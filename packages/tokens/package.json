@@ -1,0 +1,51 @@
+{
+  "name": "@gratiaos/tokens",
+  "version": "1.0.8",
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "description": "Garden design tokens and Tailwind v4 theme exports.",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GratiaOS/gratia-presence.git",
+    "directory": "packages/tokens"
+  },
+  "sideEffects": [
+    "./theme.css",
+    "./index.css"
+  ],
+  "files": [
+    "theme.css",
+    "index.css",
+    "README.md",
+    "LICENSE",
+    "index.d.ts",
+    "tokens/**"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.css",
+      "style": "./index.css"
+    },
+    "./theme.css": "./theme.css",
+    "./index.css": "./index.css",
+    "./tokens": "./tokens/manifest.json",
+    "./tokens/*": "./tokens/*"
+  },
+  "scripts": {
+    "build": "node ./scripts/sync-tokens.mjs"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.2.1",
+    "typescript": "^5.9.3"
+  },
+  "types": "./index.d.ts",
+  "peerDependencies": {
+    "tailwindcss": "^4.0.0"
+  }
+}

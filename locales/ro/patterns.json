@@ -1,0 +1,42 @@
+{
+  "soft-root": {
+    "label": "rădăcină blândă",
+    "description": "O putere liniștită care te susține cu delicatețe.",
+    "emoji": "🌱"
+  },
+  "warm-courage": {
+    "label": "curaj cald",
+    "description": "O căldură mică și constantă care ajută adevărul să iasă.",
+    "emoji": "🔥"
+  },
+  "quiet-seeing": {
+    "label": "vedere liniștită",
+    "description": "A observa fără efort, ca lumina care se mișcă pe apă.",
+    "emoji": "🍃"
+  },
+  "inner-spring": {
+    "label": "primăvară lăuntrică",
+    "description": "O mișcare proaspătă în tine care vrea să crească.",
+    "emoji": "🌸"
+  },
+  "open-field": {
+    "label": "câmp deschis",
+    "description": "O senzație de spațiu în jurul gândurilor tale.",
+    "emoji": "🌾"
+  },
+  "shared-fire": {
+    "label": "foc împărtășit",
+    "description": "Căldura care apare când inimile se apropie.",
+    "emoji": "🫂"
+  },
+  "guiding-light": {
+    "label": "lumină călăuzitoare",
+    "description": "Un mic licăr onest care arată următorul pas.",
+    "emoji": "✨"
+  },
+  "mountain-circle": {
+    "label": "cerc de munte",
+    "description": "Apartenența liniștită simțită când oamenii stau împreună.",
+    "emoji": "🏔️"
+  }
+}
