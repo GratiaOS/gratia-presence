@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useSkinField, type KernelSkinId } from '@/skin/SkinFieldProvider';
 
 const SKINS: {
@@ -15,6 +16,11 @@ const SKINS: {
 
 export function SkinToggle() {
   const { skinId, setSkinId } = useSkinField();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div
@@ -33,7 +39,7 @@ export function SkinToggle() {
       }}
     >
       {SKINS.map((skin) => {
-        const active = skinId === skin.id;
+        const active = mounted && skinId === skin.id;
         return (
           <button
             key={skin.id}

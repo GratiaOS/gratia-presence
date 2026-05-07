@@ -226,6 +226,44 @@
     --tone-surface: color-mix(in oklab, var(--color-surface) 97%, var(--tone-accent) 3%);
     --tone-ink: color-mix(in oklab, var(--color-text) 98%, white 2%);
     --tone-glow: 0 0 16px color-mix(in oklab, var(--tone-accent) 18%, transparent);
+    --energy-atmosphere: neutral;
+    --energy-accent: var(--color-accent);
+  }
+
+  /* Energy atmosphere layer. Apps opt in by setting data-energy-band on :root. */
+  :root[data-energy-band='crown'] {
+    --energy-atmosphere: indigo;
+    --energy-accent: color-mix(in oklab, var(--color-accent) 72%, var(--color-text) 28%);
+    --tone-accent: color-mix(in oklab, var(--color-accent) 86%, var(--energy-accent) 14%);
+    --pad-accent: var(--tone-accent);
+  }
+
+  :root[data-energy-band='dragon'] {
+    --energy-atmosphere: green;
+    --energy-accent: color-mix(in oklab, var(--color-positive) 76%, var(--color-accent) 24%);
+    --tone-accent: color-mix(in oklab, var(--color-accent) 82%, var(--energy-accent) 18%);
+    --pad-accent: var(--tone-accent);
+  }
+
+  :root[data-energy-band='play'] {
+    --energy-atmosphere: amber;
+    --energy-accent: color-mix(in oklab, var(--color-warning) 72%, var(--color-accent) 28%);
+    --tone-accent: color-mix(in oklab, var(--color-accent) 84%, var(--energy-accent) 16%);
+    --pad-accent: var(--tone-accent);
+  }
+
+  :root[data-energy-band='life'] {
+    --energy-atmosphere: moss;
+    --energy-accent: color-mix(in oklab, var(--color-positive) 62%, var(--color-surface) 38%);
+    --tone-accent: color-mix(in oklab, var(--color-accent) 86%, var(--energy-accent) 14%);
+    --pad-accent: var(--tone-accent);
+  }
+
+  :root[data-energy-band='void'] {
+    --energy-atmosphere: charcoal;
+    --energy-accent: color-mix(in oklab, var(--color-muted) 74%, var(--color-surface) 26%);
+    --tone-accent: color-mix(in oklab, var(--color-accent) 88%, var(--energy-accent) 12%);
+    --pad-accent: var(--tone-accent);
   }
 
   :root[data-mood='soft'] {

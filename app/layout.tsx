@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Suspense, type ReactNode } from 'react';
 import './globals.css';
 import { SpiritModeProvider } from '@/components/SpiritModeProvider';
 import { ClientProviders } from '@/components/ClientProviders';
+import EnergySystemClient from '@/components/energy/EnergySystemClient';
 import SiteHeader from '@/components/SiteHeader';
 import { SkinFieldProvider } from './skin/SkinFieldProvider';
 import { defaultLocale, supportedLocales } from '../i18n/config';
@@ -112,9 +114,15 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap"
           rel="stylesheet"
         />
-        <script dangerouslySetInnerHTML={{ __html: setInitialSkin }} />
-        <script dangerouslySetInnerHTML={{ __html: setInitialTypo }} />
-        <script dangerouslySetInnerHTML={{ __html: setInitialLocale }} />
+        <Script id="gratia-initial-skin" strategy="beforeInteractive">
+          {setInitialSkin}
+        </Script>
+        <Script id="gratia-initial-typo" strategy="beforeInteractive">
+          {setInitialTypo}
+        </Script>
+        <Script id="gratia-initial-locale" strategy="beforeInteractive">
+          {setInitialLocale}
+        </Script>
       </head>
       <body className="bg-surface text-on-surface">
         <SkinFieldProvider>
@@ -122,6 +130,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <Suspense fallback={null}>
               <SiteHeader />
             </Suspense>
+            <EnergySystemClient />
             {children}
             <ClientProviders />
           </SpiritModeProvider>

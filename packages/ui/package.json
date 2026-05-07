@@ -57,6 +57,14 @@
       "types": "./dist/primitives/whisper.d.ts",
       "import": "./dist/primitives/whisper.js"
     },
+    "./energy/EnergyHeader": {
+      "types": "./dist/energy/EnergyHeader.d.ts",
+      "import": "./dist/energy/EnergyHeader.js"
+    },
+    "./energy/TransitionGate": {
+      "types": "./dist/energy/TransitionGate.d.ts",
+      "import": "./dist/energy/TransitionGate.js"
+    },
     "./styles/base.css": {
       "default": "./styles/base.css"
     },
@@ -93,6 +101,9 @@
     "./styles/whisper.css": {
       "default": "./styles/whisper.css"
     },
+    "./styles/energy.css": {
+      "default": "./styles/energy.css"
+    },
     "./styles/header.css": {
       "default": "./styles/header.css"
     }
@@ -116,6 +127,7 @@
     "react": "^18 || ^19"
   },
   "dependencies": {
+    "@gratiaos/energy-core": "workspace:*",
     "@gratiaos/presence-kernel": "^1.1.6"
   },
   "devDependencies": {

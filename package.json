@@ -5,7 +5,7 @@
   "private": false,
   "scripts": {
     "dev": "next dev",
-    "build": "pnpm --filter @gratiaos/tokens build && pnpm --filter @gratiaos/ui build && next build",
+    "build": "pnpm --filter @gratiaos/energy-core build && pnpm --filter @gratiaos/tokens build && pnpm --filter @gratiaos/ui build && next build",
     "pages:build": "pnpm build",
     "start": "next start",
     "lint": "next lint",
@@ -14,12 +14,13 @@
   },
   "dependencies": {
     "@gratiaos/icons": "^1.0.4",
+    "@gratiaos/energy-core": "workspace:*",
     "@gratiaos/presence-kernel": "^1.1.5",
     "@gratiaos/signal": "^1.0.3",
     "@gratiaos/tokens": "workspace:*",
     "@gratiaos/ui": "workspace:*",
     "gray-matter": "^4.0.3",
-    "next": "16.1.7",
+    "next": "16.2.5",
     "postcss": "^8.5.8",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -28,7 +29,7 @@
   "devDependencies": {
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
-    "@next/mdx": "^16.1.6",
+    "@next/mdx": "^16.2.5",
     "@tailwindcss/postcss": "^4.2.1",
     "@tailwindcss/typography": "^0.5.19",
     "@types/mdx": "^2.0.13",
@@ -46,6 +47,11 @@
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
     "wrangler": "^4.13.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss": "^8.5.14"
+    }
   },
   "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531"
 }
