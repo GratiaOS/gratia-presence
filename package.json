@@ -5,7 +5,7 @@
   "private": false,
   "scripts": {
     "dev": "next dev",
-    "build": "pnpm --filter @gratiaos/energy-core build && pnpm --filter @gratiaos/tokens build && pnpm --filter @gratiaos/ui build && next build",
+    "build": "pnpm --filter @gratiaos/energy-core build && pnpm --filter @gratiaos/identity-core build && pnpm --filter @gratiaos/tokens build && pnpm --filter @gratiaos/ui build && next build",
     "pages:build": "pnpm build",
     "start": "next start",
     "lint": "next lint",

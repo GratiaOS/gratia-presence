@@ -1,0 +1,28 @@
+{
+  "name": "@gratiaos/identity-core",
+  "version": "0.1.0",
+  "description": "Ghost-first identity separation engine for sovereign tags and inert shadows.",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "funding": "https://revolut.me/gratiaos",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "pnpm run build && node test/identity-core.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
