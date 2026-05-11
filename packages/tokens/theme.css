@@ -46,6 +46,8 @@
   --hud-glow-strength: 0.45; /* HUD glow strength */
 
   /* Radius & shadow (custom; shadow-* namespace only generates when named accordingly) */
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
   --radius-pill: 9999px;
   --radius-2xl: 1.25rem;
   /* Custom card shadow used via var(--shadow-card) */
@@ -192,6 +194,15 @@
     --text-subtle: var(--color-subtle);
     --text-faint: var(--color-faint);
     --color-fill-subtle: color-mix(in oklab, var(--color-text) 8%, var(--color-surface));
+
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --control-cluster-radius: var(--radius-md);
+    --control-cluster-padding: 0.25rem;
+    --control-item-radius: calc(var(--control-cluster-radius) - var(--control-cluster-padding));
+    --control-cluster-border: 1px solid color-mix(in oklab, var(--color-border) 60%, transparent);
+    --control-cluster-bg: color-mix(in oklab, var(--color-elev) 92%, var(--surface) 8%);
+    --control-cluster-bg-hover: color-mix(in oklab, var(--color-elev) 70%, var(--surface) 30%);
 
     --sheet-radius: var(--radius-2xl);
     --shadow-card-ambient: var(--shadow-card);

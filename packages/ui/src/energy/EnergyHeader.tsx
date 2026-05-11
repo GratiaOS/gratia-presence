@@ -1,6 +1,7 @@
 import * as React from 'react';
 import type { EnergyBand, EnergyPrediction, EnergyState } from '@gratiaos/energy-core';
 import { ENERGY_BANDS, ENERGY_ORDER } from '@gratiaos/energy-core';
+import { Sheet } from '../primitives/sheet.js';
 import { Whisper } from '../primitives/whisper.js';
 
 export type EnergyHeaderProps = {
@@ -11,6 +12,11 @@ export type EnergyHeaderProps = {
   className?: string;
   onMark?: (band: EnergyBand, level: number) => void;
   onStartRitual?: () => void;
+};
+
+export type EnergyCapsuleProps = EnergyHeaderProps & {
+  sheetTitle?: React.ReactNode;
+  closeLabel?: string;
 };
 
 export type EnergyHeaderCopy = {
@@ -119,6 +125,90 @@ export function EnergyHeader({
         className="energy-header-whisper"
       />
     </section>
+  );
+}
+
+export function EnergyCapsule({
+  state,
+  prediction,
+  copy = DEFAULT_COPY,
+  pulseOnChange = true,
+  className,
+  onMark,
+  onStartRitual,
+  sheetTitle,
+  closeLabel = 'Close',
+}: EnergyCapsuleProps) {
+  const [open, setOpen] = React.useState(false);
+  const current = copy.bands[state.currentBand];
+  const ritual = prediction.exit.ritual;
+  const urgent = prediction.exit.urgency === 'now';
+
+  return (
+    <>
+      <button
+        type="button"
+        data-ui="energy-capsule"
+        data-energy-band={state.currentBand}
+        data-exit-urgency={prediction.exit.urgency}
+        className={className}
+        onClick={() => setOpen(true)}
+        aria-label={copy.changeBand}>
+        <span data-slot="energy-code">{ENERGY_BANDS[state.currentBand].code}</span>
+        <span data-slot="energy-label">{current.shortLabel}</span>
+        <span data-slot="energy-level">{Math.round(state.currentLevel * 100)}%</span>
+      </button>
+
+      <Sheet open={open} onOpenChange={setOpen} side="bottom" title={sheetTitle ?? copy.ariaLabel} closeLabel={closeLabel}>
+        <div data-ui="energy-sheet" data-energy-band={state.currentBand} data-exit-urgency={prediction.exit.urgency}>
+          <div data-slot="energy-sheet-current">
+            <span data-slot="energy-code">{ENERGY_BANDS[state.currentBand].code}</span>
+            <span>{current.label}</span>
+            <span data-slot="energy-level">{Math.round(state.currentLevel * 100)}%</span>
+          </div>
+
+          <div data-slot="energy-sheet-marks" aria-label={copy.marksLabel}>
+            {ENERGY_ORDER.map((band) => {
+              const active = band === state.currentBand;
+              const definition = copy.bands[band];
+              return (
+                <button
+                  key={band}
+                  type="button"
+                  data-energy-choice={band}
+                  data-active={active ? 'true' : undefined}
+                  onClick={() => {
+                    onMark?.(band, DEFAULT_LEVELS[band]);
+                    setOpen(false);
+                  }}
+                  aria-pressed={active}
+                  aria-label={copy.markSilently(definition.label)}>
+                  <span>{ENERGY_BANDS[band].code}</span>
+                  <span>{definition.shortLabel}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            data-slot="energy-sheet-ritual"
+            onClick={() => {
+              setOpen(false);
+              onStartRitual?.();
+            }}
+            aria-label={copy.startRitual(ritual.title)}>
+            {copy.ritualCta}
+          </button>
+
+          <Whisper
+            tone={urgent ? 'presence' : 'collaborative'}
+            pulseOnChange={pulseOnChange}
+            text={urgent ? ritual.whisper : `${ritual.title}. ${ritual.whisper}`}
+          />
+        </div>
+      </Sheet>
+    </>
   );
 }
 

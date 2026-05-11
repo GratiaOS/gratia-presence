@@ -4,7 +4,6 @@ import { Suspense, type ReactNode } from 'react';
 import './globals.css';
 import { SpiritModeProvider } from '@/components/SpiritModeProvider';
 import { ClientProviders } from '@/components/ClientProviders';
-import EnergySystemClient from '@/components/energy/EnergySystemClient';
 import SiteHeader from '@/components/SiteHeader';
 import { SkinFieldProvider } from './skin/SkinFieldProvider';
 import { defaultLocale, supportedLocales } from '../i18n/config';
@@ -130,7 +129,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <Suspense fallback={null}>
               <SiteHeader />
             </Suspense>
-            <EnergySystemClient />
             {children}
             <ClientProviders />
           </SpiritModeProvider>

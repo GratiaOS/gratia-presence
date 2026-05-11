@@ -1,0 +1,91 @@
+@layer components {
+  [data-ui='sheet'] {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    display: grid;
+    pointer-events: none;
+  }
+
+  [data-ui='sheet'] [data-slot='sheet-backdrop'] {
+    position: fixed;
+    inset: 0;
+    border: 0;
+    background: color-mix(in oklab, var(--color-surface) 58%, black 42%);
+    cursor: default;
+    pointer-events: auto;
+  }
+
+  [data-ui='sheet'] [data-slot='sheet-panel'] {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    width: min(22rem, calc(100vw - 1.5rem));
+    max-height: calc(100dvh - 1.5rem);
+    margin: 0.75rem;
+    border: 1px solid color-mix(in oklab, var(--color-border) 76%, transparent);
+    border-radius: 0.75rem;
+    background: color-mix(in oklab, var(--color-elev) 94%, var(--energy-accent, var(--color-accent)) 6%);
+    box-shadow: var(--shadow-depth-3, var(--shadow-card));
+    color: var(--color-text);
+    overflow: hidden;
+    pointer-events: auto;
+  }
+
+  [data-ui='sheet'][data-side='right'] {
+    justify-items: end;
+    align-items: stretch;
+  }
+
+  [data-ui='sheet'][data-side='left'] {
+    justify-items: start;
+    align-items: stretch;
+  }
+
+  [data-ui='sheet'][data-side='bottom'] {
+    justify-items: center;
+    align-items: end;
+  }
+
+  [data-ui='sheet'][data-side='bottom'] [data-slot='sheet-panel'] {
+    width: min(34rem, calc(100vw - 1rem));
+    max-height: min(82dvh, 42rem);
+    margin: 0.5rem;
+  }
+
+  [data-ui='sheet'] [data-slot='sheet-header'] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3.25rem;
+    padding: 0.65rem 0.75rem 0.55rem 1rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--color-border) 62%, transparent);
+  }
+
+  [data-ui='sheet'] [data-slot='sheet-title'] {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  [data-ui='sheet'] [data-slot='sheet-close'] {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    color: var(--color-muted);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  [data-ui='sheet'] [data-slot='sheet-close']:hover {
+    color: var(--color-text);
+  }
+
+  [data-ui='sheet'] [data-slot='sheet-body'] {
+    min-height: 0;
+    overflow: auto;
+    padding: 1rem;
+  }
+}

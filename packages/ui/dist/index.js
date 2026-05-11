@@ -8,6 +8,7 @@ export * from './primitives/toast.js';
 export * from './primitives/whisper.js';
 export * from './primitives/select.js';
 export * from './primitives/toolbar.js';
+export * from './primitives/sheet.js';
 export * from './hooks/index.js';
 export * from './header/ConductorChip.js';
 export * from './header/Constellation.js';

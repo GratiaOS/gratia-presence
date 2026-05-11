@@ -30,10 +30,12 @@ export function SkinToggle() {
         display: 'inline-flex',
         alignItems: 'center',
         gap: '0.25rem',
-        padding: '0.25rem',
-        borderRadius: '0.75rem',
-        border: '1px solid color-mix(in oklab, var(--color-border) 60%, transparent)',
-        background: 'color-mix(in oklab, var(--color-elev) 92%, var(--surface) 8%)',
+        padding: 'var(--control-cluster-padding, 0.25rem)',
+        borderRadius: 'var(--control-cluster-radius, var(--radius-md, 0.5rem))',
+        border:
+          'var(--control-cluster-border, 1px solid color-mix(in oklab, var(--color-border) 60%, transparent))',
+        background:
+          'var(--control-cluster-bg, color-mix(in oklab, var(--color-elev) 92%, var(--surface) 8%))',
         fontSize: '1rem',
         lineHeight: '1rem',
       }}
@@ -55,7 +57,7 @@ export function SkinToggle() {
               width: '1.75rem',
               height: '1.75rem',
               padding: 0,
-              borderRadius: '0.5rem',
+              borderRadius: 'var(--control-item-radius, calc(0.5rem - 0.25rem))',
               fontWeight: 500,
               cursor: 'pointer',
               border: 'none',
@@ -71,7 +73,7 @@ export function SkinToggle() {
             onMouseEnter={(e) => {
               if (!active) {
                 e.currentTarget.style.background =
-                  'color-mix(in oklab, var(--color-elev) 70%, var(--surface) 30%)';
+                  'var(--control-cluster-bg-hover, color-mix(in oklab, var(--color-elev) 70%, var(--surface) 30%))';
               }
             }}
             onMouseLeave={(e) => {

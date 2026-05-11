@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   createEnergyClient,
   createLocalStorageEnergyAdapter,
@@ -9,7 +10,13 @@ import {
   type ExitRitual,
   type EnergyState,
 } from '@gratiaos/energy-core';
-import { EnergyHeader, TransitionGate, type EnergyHeaderCopy, type TransitionGateCopy } from '@gratiaos/ui';
+import {
+  EnergyCapsule,
+  EnergyHeader,
+  TransitionGate,
+  type EnergyHeaderCopy,
+  type TransitionGateCopy,
+} from '@gratiaos/ui';
 import { defaultLocale, supportedLocales } from '../../../i18n/config';
 import type { Locale } from '../../../i18n/resources';
 
@@ -20,6 +27,10 @@ type EnergyLocaleCopy = {
   header: EnergyHeaderCopy;
   gate: TransitionGateCopy;
   rituals: Record<string, ExitRitual>;
+};
+
+type EnergySystemClientProps = {
+  variant?: 'header' | 'capsule';
 };
 
 const copy: Record<Locale, EnergyLocaleCopy> = {
@@ -162,10 +173,16 @@ function normalizeLocale(value?: string | null): Locale {
   return defaultLocale as Locale;
 }
 
-function readLocale() {
+function readLocale(queryLocale?: string | null) {
   if (typeof window === 'undefined') return defaultLocale as Locale;
   const params = new URLSearchParams(window.location.search);
-  return normalizeLocale(params.get(LOCALE_QUERY_KEY) ?? window.localStorage.getItem(LOCALE_STORAGE_KEY));
+  return normalizeLocale(queryLocale ?? params.get(LOCALE_QUERY_KEY) ?? window.localStorage.getItem(LOCALE_STORAGE_KEY));
+}
+
+function readLocaleEvent(event?: Event) {
+  const detail = event && 'detail' in event ? (event as CustomEvent<{ locale?: unknown }>).detail : null;
+  const eventLocale = typeof detail?.locale === 'string' ? detail.locale : null;
+  return eventLocale ? normalizeLocale(eventLocale) : null;
 }
 
 function localizePrediction(prediction: EnergyPrediction, locale: Locale): EnergyPrediction {
@@ -192,11 +209,13 @@ function createBrowserSnapshot() {
   };
 }
 
-export default function EnergySystemClient() {
+export default function EnergySystemClient({ variant = 'header' }: EnergySystemClientProps) {
+  const searchParams = useSearchParams();
+  const queryLocale = searchParams?.get(LOCALE_QUERY_KEY);
   const client = useMemo(() => createEnergyClient(createLocalStorageEnergyAdapter()), []);
   const [state, setState] = useState<EnergyState>(fallbackState);
   const [prediction, setPrediction] = useState<EnergyPrediction>(fallbackPrediction);
-  const [locale, setLocale] = useState<Locale>(defaultLocale as Locale);
+  const [locale, setLocale] = useState<Locale>(() => normalizeLocale(queryLocale));
   const [gateOpen, setGateOpen] = useState(false);
 
   const refresh = useCallback(() => {
@@ -209,15 +228,11 @@ export default function EnergySystemClient() {
     const snapshot = createBrowserSnapshot();
     setState(snapshot.state);
     setPrediction(snapshot.prediction);
-    setLocale(readLocale());
+    setLocale(readLocale(queryLocale));
     window.addEventListener('storage', refresh);
     window.addEventListener('focus', refresh);
     const syncLocale = (event?: Event) => {
-      const eventLocale =
-        event instanceof CustomEvent && typeof event.detail?.locale === 'string'
-          ? event.detail.locale
-          : null;
-      setLocale(eventLocale ? normalizeLocale(eventLocale) : readLocale());
+      setLocale(readLocaleEvent(event) ?? readLocale(queryLocale));
     };
     syncLocale();
     window.addEventListener('gratia:localechange', syncLocale);
@@ -226,7 +241,7 @@ export default function EnergySystemClient() {
       window.removeEventListener('focus', refresh);
       window.removeEventListener('gratia:localechange', syncLocale);
     };
-  }, [refresh]);
+  }, [queryLocale, refresh]);
 
   useEffect(() => {
     document.documentElement.dataset.energyBand = state.currentBand;
@@ -242,14 +257,25 @@ export default function EnergySystemClient() {
 
   return (
     <>
-      <EnergyHeader
-        state={state}
-        prediction={localizedPrediction}
-        copy={localizedCopy.header}
-        pulseOnChange
-        onMark={mark}
-        onStartRitual={() => setGateOpen(true)}
-      />
+      {variant === 'capsule' ? (
+        <EnergyCapsule
+          state={state}
+          prediction={localizedPrediction}
+          copy={localizedCopy.header}
+          pulseOnChange
+          onMark={mark}
+          onStartRitual={() => setGateOpen(true)}
+        />
+      ) : (
+        <EnergyHeader
+          state={state}
+          prediction={localizedPrediction}
+          copy={localizedCopy.header}
+          pulseOnChange
+          onMark={mark}
+          onStartRitual={() => setGateOpen(true)}
+        />
+      )}
       <TransitionGate
         open={gateOpen}
         ritual={localizedPrediction.exit.ritual}

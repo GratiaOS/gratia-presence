@@ -110,6 +110,112 @@
     font-size: 0.72rem;
   }
 
+  [data-ui='energy-capsule'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
+    height: 2.25rem;
+    padding: var(--control-cluster-padding, 0.25rem) 0.65rem var(--control-cluster-padding, 0.25rem) var(--control-cluster-padding, 0.25rem);
+    border: var(--control-cluster-border, 1px solid color-mix(in oklab, var(--color-border) 60%, transparent));
+    border-radius: var(--control-cluster-radius, var(--radius-md, 0.5rem));
+    background: var(--control-cluster-bg, color-mix(in oklab, var(--color-elev) 92%, var(--surface) 8%));
+    color: var(--color-text);
+    cursor: pointer;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      transform 80ms ease;
+  }
+
+  [data-ui='energy-capsule']:hover {
+    background: var(--control-cluster-bg-hover, color-mix(in oklab, var(--color-elev) 70%, var(--surface) 30%));
+  }
+
+  [data-ui='energy-capsule']:active {
+    transform: translateY(0.5px);
+  }
+
+  [data-ui='energy-capsule'] [data-slot='energy-code'],
+  [data-ui='energy-sheet'] [data-slot='energy-code'] {
+    color: var(--energy-accent, var(--color-accent));
+    font-weight: 700;
+  }
+
+  [data-ui='energy-capsule'] [data-slot='energy-code'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    border-radius: var(--control-item-radius, calc(0.5rem - 0.25rem));
+    background: color-mix(in oklab, var(--energy-accent, var(--color-accent)) 18%, var(--surface));
+    box-shadow:
+      0 0 0 1.5px color-mix(in oklab, var(--energy-accent, var(--color-accent)) 35%, transparent),
+      0 1px 3px color-mix(in oklab, var(--energy-accent, var(--color-accent)) 20%, transparent);
+    font-size: 0.72rem;
+  }
+
+  [data-ui='energy-capsule'] [data-slot='energy-level'],
+  [data-ui='energy-sheet'] [data-slot='energy-level'] {
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-ui='energy-sheet'] {
+    display: grid;
+    gap: 1rem;
+  }
+
+  [data-ui='energy-sheet'] [data-slot='energy-sheet-current'] {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    font-size: 1.05rem;
+  }
+
+  [data-ui='energy-sheet'] [data-slot='energy-sheet-marks'] {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--control-cluster-padding, 0.25rem);
+    padding: var(--control-cluster-padding, 0.25rem);
+    border: var(--control-cluster-border, 1px solid color-mix(in oklab, var(--color-border) 60%, transparent));
+    border-radius: var(--control-cluster-radius, var(--radius-md, 0.5rem));
+    background: var(--control-cluster-bg, color-mix(in oklab, var(--color-elev) 92%, var(--surface) 8%));
+  }
+
+  [data-ui='energy-sheet'] [data-energy-choice] {
+    display: grid;
+    gap: 0.2rem;
+    min-height: 3.25rem;
+    place-items: center;
+    border: 0;
+    border-radius: var(--control-item-radius, calc(0.5rem - 0.25rem));
+    background: transparent;
+    color: var(--color-muted);
+    cursor: pointer;
+    font-size: 0.78rem;
+  }
+
+  [data-ui='energy-sheet'] [data-energy-choice][data-active='true'],
+  [data-ui='energy-sheet'] [data-energy-choice]:hover {
+    background: color-mix(in oklab, var(--energy-accent, var(--color-accent)) 12%, transparent);
+    color: var(--color-text);
+  }
+
+  [data-ui='energy-sheet'] [data-slot='energy-sheet-ritual'] {
+    justify-self: start;
+    min-height: 2.1rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid color-mix(in oklab, var(--energy-accent, var(--color-accent)) 42%, var(--color-border));
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--energy-accent, var(--color-accent)) 12%, transparent);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
   [data-ui='transition-gate'] {
     position: fixed;
     inset: 0;

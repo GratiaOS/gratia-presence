@@ -49,6 +49,10 @@
       "types": "./dist/primitives/toolbar.d.ts",
       "import": "./dist/primitives/toolbar.js"
     },
+    "./primitives/Sheet": {
+      "types": "./dist/primitives/sheet.d.ts",
+      "import": "./dist/primitives/sheet.js"
+    },
     "./primitives/Select": {
       "types": "./dist/primitives/select.d.ts",
       "import": "./dist/primitives/select.js"
@@ -94,6 +98,9 @@
     },
     "./styles/toolbar.css": {
       "default": "./styles/toolbar.css"
+    },
+    "./styles/sheet.css": {
+      "default": "./styles/sheet.css"
     },
     "./styles/select.css": {
       "default": "./styles/select.css"
