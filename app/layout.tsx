@@ -5,6 +5,7 @@ import './globals.css';
 import { SpiritModeProvider } from '@/components/SpiritModeProvider';
 import { ClientProviders } from '@/components/ClientProviders';
 import SiteHeader from '@/components/SiteHeader';
+import PwaRegister from '@/components/PwaRegister';
 import { SkinFieldProvider } from './skin/SkinFieldProvider';
 import { defaultLocale, supportedLocales } from '../i18n/config';
 
@@ -16,6 +17,12 @@ export const metadata: Metadata = {
   },
   description:
     'Quiet software for presence, reflection, and rhythm. No account, no feed, no pressure.',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    title: 'Gratia',
+    statusBarStyle: 'default',
+  },
   openGraph: {
     title: 'Gratia - Personal OS',
     description: 'Quiet software for presence, reflection, and rhythm.',
@@ -45,7 +52,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     try {
       if (!document.documentElement.dataset.skinId) {
         const stored =
-          window.localStorage.getItem('gratiaSkinId') ??
           window.localStorage.getItem('gratia.skinId');
         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         const next = stored
@@ -92,6 +98,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       suppressHydrationWarning
     >
       <head>
+        <meta name="theme-color" content="#f3eee2" />
+        <meta name="mobile-web-app-capable" content="yes" />
         {/* 
 ═══════════════════════════════════════════════════════════
    🌱 THE GARDEN REMEMBERS 
@@ -131,6 +139,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             </Suspense>
             {children}
             <ClientProviders />
+            <PwaRegister />
           </SpiritModeProvider>
         </SkinFieldProvider>
       </body>

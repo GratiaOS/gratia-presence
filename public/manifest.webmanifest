@@ -1,0 +1,26 @@
+{
+  "name": "Gratia - Personal OS",
+  "short_name": "Gratia",
+  "description": "Quiet local-first software for presence, reflection, and rhythm.",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f3eee2",
+  "theme_color": "#f3eee2",
+  "categories": ["productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/mark/gratia-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

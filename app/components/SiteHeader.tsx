@@ -16,13 +16,22 @@ const LOCALE_QUERY_KEY = 'lang';
 
 const labels: Record<
   Locale,
-  { home: string; journal: string; about: string; support: string; openNav: string; closeNav: string }
+  {
+    home: string;
+    journal: string;
+    about: string;
+    support: string;
+    backup: string;
+    openNav: string;
+    closeNav: string;
+  }
 > = {
   en: {
     home: 'Gratia home',
     journal: 'Lunar Journal',
     about: 'About',
     support: 'Support',
+    backup: 'Backup',
     openNav: 'Open navigation',
     closeNav: 'Close navigation',
   },
@@ -31,6 +40,7 @@ const labels: Record<
     journal: 'Diario Lunar',
     about: 'Acerca de',
     support: 'Apoyar',
+    backup: 'Copia',
     openNav: 'Abrir navegación',
     closeNav: 'Cerrar navegación',
   },
@@ -39,6 +49,7 @@ const labels: Record<
     journal: 'Jurnal Lunar',
     about: 'Despre',
     support: 'Susține',
+    backup: 'Copie',
     openNav: 'Deschide navigarea',
     closeNav: 'Închide navigarea',
   },
@@ -93,6 +104,9 @@ export default function SiteHeader() {
           <Link href="/support" className="p-3 underline-offset-4 hover:underline">
             {t.support}
           </Link>
+          <Link href="/backup" className="p-3 underline-offset-4 hover:underline">
+            {t.backup}
+          </Link>
         </nav>
         <div className="ml-auto"></div>
         <div className="hidden items-center gap-3 md:flex">
@@ -122,6 +136,9 @@ export default function SiteHeader() {
           </Link>
           <Link href="/support" className="py-3 underline-offset-4 hover:underline" onClick={() => setNavOpen(false)}>
             {t.support}
+          </Link>
+          <Link href="/backup" className="py-3 underline-offset-4 hover:underline" onClick={() => setNavOpen(false)}>
+            {t.backup}
           </Link>
         </nav>
         <div className="mt-6 grid gap-4 border-t border-[color:var(--color-border)] pt-5">
