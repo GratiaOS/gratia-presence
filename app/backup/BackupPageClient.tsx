@@ -233,7 +233,7 @@ function BackupContent() {
           <p className="text-xs tracking-[0.25em] text-[color:var(--color-muted)] uppercase">
             {t.eyebrow}
           </p>
-          <h1 className="font-gratia text-4xl leading-tight font-semibold md:text-6xl">
+          <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-6xl">
             {t.title}
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-[color:var(--color-muted)]">

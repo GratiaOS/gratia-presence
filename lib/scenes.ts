@@ -1,5 +1,24 @@
 export const scenes = [
   {
+    id: 'may-2026-the-final-cycle-integration',
+    kind: 'integration',
+    title: 'Final Cycle · What Remains Moves Forward',
+    witnessedBy: ['Gratia', 'The Moon', 'Journal'],
+    tone: 'integration',
+    breathKind: 'rhythm',
+    roots: ['lunar-journal', 'somatic-notes', 'field-notes', 'integration'],
+    lastBreath: 'waning threshold',
+    body: `
+The last cycle is not an ending; it is where repetition becomes instruction.
+
+Today, the missing ribs of the printed journal - Somatic Notes, Field Notes, Free Reflection - returned to complete the body.
+
+What appeared three times is no longer noise; it is material.
+What has softened can be carried.
+What has served its purpose can be set down without shame.
+    `.trim(),
+  },
+  {
     id: 'night-luna-through-mesh',
     kind: 'integration',
     title: 'Nightfall · The Moon Through The Mesh',

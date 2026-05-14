@@ -168,7 +168,7 @@ function AboutContent() {
           <p className="text-xs tracking-[0.25em] text-[color:var(--color-muted)] uppercase">
             {t.eyebrow}
           </p>
-          <h1 className="font-gratia text-4xl leading-tight font-semibold md:text-6xl">
+          <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-6xl">
             {t.title}
           </h1>
           <div className="space-y-3 text-lg leading-relaxed text-[color:var(--color-muted)]">
@@ -181,7 +181,7 @@ function AboutContent() {
         <section className="grid gap-5">
           {t.sections.map((section) => (
             <Card key={section.title} as="article" variant="plain" className="space-y-4">
-              <h2 className="font-gratia text-2xl font-medium">{section.title}</h2>
+              <h2 className="font-gratia text-2xl font-medium tracking-tight">{section.title}</h2>
               <div className="space-y-3 leading-relaxed text-[color:var(--color-muted)]">
                 {section.body.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>

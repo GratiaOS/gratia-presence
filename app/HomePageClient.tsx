@@ -62,7 +62,7 @@ function HomeContent() {
     <main className="flex min-h-screen items-center justify-center px-6 py-16" dir="ltr">
       <section className="landing-hero max-w-3xl space-y-8 text-center">
         <div className="space-y-5">
-          <h1 className="font-gratia text-4xl leading-tight font-semibold md:text-6xl">
+          <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-6xl">
             {t.title}
           </h1>
           <p className="mx-auto max-w-xl text-lg leading-relaxed text-[color:var(--color-muted)] md:text-xl">

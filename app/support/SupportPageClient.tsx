@@ -140,7 +140,7 @@ function SupportContent() {
           <p className="text-xs tracking-[0.25em] text-[color:var(--color-muted)] uppercase">
             {t.eyebrow}
           </p>
-          <h1 className="font-gratia text-4xl leading-tight font-semibold md:text-6xl">
+          <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-6xl">
             {t.title}
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-[color:var(--color-muted)]">
@@ -151,7 +151,7 @@ function SupportContent() {
         <section className="grid gap-5">
           {t.sections.map((section) => (
             <Card key={section.title} as="article" variant="plain" className="space-y-4">
-              <h2 className="font-gratia text-2xl font-medium">{section.title}</h2>
+              <h2 className="font-gratia text-2xl font-medium tracking-tight">{section.title}</h2>
               <div className="space-y-3 leading-relaxed text-[color:var(--color-muted)]">
                 {section.body.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
@@ -163,7 +163,7 @@ function SupportContent() {
 
         <section className="flex flex-wrap gap-3 border-t border-[color:var(--color-border)] pt-8">
           <a
-            href="mailto:contact@gratia.space?subject=Supporting%20Gratia%20Presence"
+            href="https://revolut.me/gratiaos"
             className="inline-flex items-center justify-center rounded-full border border-[color:var(--color-accent)]/40 bg-[color:var(--color-accent)]/10 px-5 py-2.5 text-sm font-medium text-[color:var(--color-accent)] transition hover:bg-[color:var(--color-accent)]/15"
           >
             {t.supportCta}

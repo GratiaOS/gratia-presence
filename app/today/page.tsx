@@ -28,17 +28,37 @@ function phaseFromAge(age: number): LunarPhase {
   return 'waning-moon';
 }
 
+function moonMarkFromAge(age: number) {
+  if (age < 1.5 || age >= 28.5) return '🌑';
+  if (age < 4.5) return '🌒';
+  if (age < 11) return '🌓';
+  if (age < 13.5) return '🌔';
+  if (age < 16.5) return '🌕';
+  if (age < 19) return '🌖';
+  if (age < 25) return '🌗';
+  return '🌘';
+}
+
 function pickPageIndex(phase: LunarPhase, age: number, pageCount: number) {
-  const windows: Record<LunarPhase, [number, number]> = {
-    'new-moon': age >= 28 ? [28, LUNAR_CYCLE_DAYS] : [0, 4.5],
+  if (pageCount <= 1) return 0;
+
+  if (phase === 'new-moon') {
+    const start = 28;
+    const end = 4.5;
+    const duration = LUNAR_CYCLE_DAYS - start + end;
+    const progress = age >= start ? age - start : LUNAR_CYCLE_DAYS - start + age;
+    return Math.min(pageCount - 1, Math.floor((progress / duration) * pageCount));
+  }
+
+  const windows: Record<Exclude<LunarPhase, 'new-moon'>, [number, number]> = {
     'waxing-moon': [4.5, 13.5],
     'full-moon': [13.5, 18.5],
     'waning-moon': [18.5, 28],
   };
-  const [start] = windows[phase];
-  const normalizedAge = phase === 'new-moon' && age >= 28 ? age : Math.max(age, start);
-  const dayInPhase = Math.max(0, Math.round(normalizedAge - start));
-  return Math.min(pageCount - 1, dayInPhase);
+  const [start, end] = windows[phase];
+  const duration = end - start;
+  const progress = Math.min(duration, Math.max(0, age - start));
+  return Math.min(pageCount - 1, Math.floor((progress / duration) * pageCount));
 }
 
 function getRecommendation(date: Date, locale: Locale): Recommendation {
@@ -136,8 +156,8 @@ function TodayJournal() {
               {content.ui.eyebrow}
             </p>
             <div className="mt-4 flex items-center gap-2">
-              <span aria-hidden="true" className="text-6xl/7">
-                {phaseInfo.mark}
+              <span aria-hidden="true" className="text-5xl/7">
+                {moonMarkFromAge(recommendation.age)}
               </span>
               <div className="mt-1">
                 <h1 className="text-body">{phaseInfo.title}</h1>
@@ -149,7 +169,7 @@ function TodayJournal() {
 
         <section className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,14rem)]">
           <article>
-            <h2 className="font-gratia text-2xl tracking-tight md:text-3xl">
+            <h2 className="font-gratia text-2xl font-medium tracking-tight md:text-3xl">
               {recommendation.primary.title}
             </h2>
 
@@ -219,7 +239,7 @@ function TodayJournal() {
                           {content.ui.delete}
                         </button>
                       </div>
-                      <p className="font-gratia mt-3">{entry.pageTitle}</p>
+                      <p className="font-gratia mt-3 tracking-tight">{entry.pageTitle}</p>
                       <p className="mt-1 max-h-24 overflow-hidden text-sm">{entry.content}</p>
                     </Card>
                   ))}
