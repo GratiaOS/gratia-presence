@@ -19,6 +19,7 @@ import {
 } from '@gratiaos/ui';
 import { defaultLocale, supportedLocales } from '../../../i18n/config';
 import type { Locale } from '../../../i18n/resources';
+import { pullEnergyStateFromM3Edge, syncEnergyMarkWithM3Edge } from '../../../lib/m3-edge';
 
 const LOCALE_STORAGE_KEY = 'gratia.locale';
 const LOCALE_QUERY_KEY = 'lang';
@@ -224,31 +225,48 @@ export default function EnergySystemClient({ variant = 'header' }: EnergySystemC
     setPrediction(client.predict({ kind: nextState.currentBand }));
   }, [client]);
 
+  const pullRemoteEnergy = useCallback(() => {
+    void pullEnergyStateFromM3Edge().then((result) => {
+      if (result.ok && result.imported > 0) refresh();
+    });
+  }, [refresh]);
+
   useEffect(() => {
     const snapshot = createBrowserSnapshot();
     setState(snapshot.state);
     setPrediction(snapshot.prediction);
     setLocale(readLocale(queryLocale));
-    window.addEventListener('storage', refresh);
-    window.addEventListener('focus', refresh);
+    pullRemoteEnergy();
+    const refreshFromFocus = () => {
+      refresh();
+      pullRemoteEnergy();
+    };
+    window.addEventListener('storage', refreshFromFocus);
+    window.addEventListener('focus', refreshFromFocus);
     const syncLocale = (event?: Event) => {
       setLocale(readLocaleEvent(event) ?? readLocale(queryLocale));
     };
     syncLocale();
     window.addEventListener('gratia:localechange', syncLocale);
+    window.addEventListener('gratia:m3edge:change', pullRemoteEnergy);
+    window.addEventListener('gratia:energy:remote-sync', refresh);
     return () => {
-      window.removeEventListener('storage', refresh);
-      window.removeEventListener('focus', refresh);
+      window.removeEventListener('storage', refreshFromFocus);
+      window.removeEventListener('focus', refreshFromFocus);
       window.removeEventListener('gratia:localechange', syncLocale);
+      window.removeEventListener('gratia:m3edge:change', pullRemoteEnergy);
+      window.removeEventListener('gratia:energy:remote-sync', refresh);
     };
-  }, [queryLocale, refresh]);
+  }, [pullRemoteEnergy, queryLocale, refresh]);
 
   useEffect(() => {
     document.documentElement.dataset.energyBand = state.currentBand;
   }, [state.currentBand]);
 
   const mark = (band: EnergyBand, level: number) => {
-    client.mark({ kind: band, level, who: 'self' });
+    const input = { kind: band, level, who: 'self' };
+    client.mark(input);
+    syncEnergyMarkWithM3Edge(input);
     refresh();
   };
 

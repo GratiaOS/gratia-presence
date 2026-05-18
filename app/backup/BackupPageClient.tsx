@@ -4,6 +4,16 @@ import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Card } from '@gratiaos/ui';
 import { defaultLocale, supportedLocales } from '../../i18n/config';
 import type { Locale } from '../../i18n/resources';
+import {
+  checkM3EdgeWriteAuth,
+  checkM3EdgeHealth,
+  clearM3EdgeToken,
+  M3_EDGE_DEFAULT_URL,
+  readM3EdgeToken,
+  readM3EdgeUrl,
+  saveM3EdgeConfig,
+  syncLatestEnergyMarkWithM3Edge,
+} from '../../lib/m3-edge';
 
 const BACKUP_SCHEMA = 'gratia.ghost.backup.v1';
 const LOCALE_STORAGE_KEY = 'gratia.locale';
@@ -39,6 +49,24 @@ const copy: Record<
     imported: (count: number) => string;
     invalid: string;
     localItems: (count: number) => string;
+    edgeTitle: string;
+    edgeBody: string;
+    edgeUrl: string;
+    edgeToken: string;
+    edgeTokenPlaceholder: string;
+    edgeSave: string;
+    edgeTest: string;
+    edgeSync: string;
+    edgeClear: string;
+    edgeConfigured: string;
+    edgeNotConfigured: string;
+    edgeSaved: string;
+    edgeCleared: string;
+    edgeOnline: (storage?: string) => string;
+    edgeAuthFailed: string;
+    edgeSynced: string;
+    edgeFailed: string;
+    edgeSyncMissing: string;
   }
 > = {
   en: {
@@ -60,6 +88,25 @@ const copy: Record<
     imported: (count) => `Imported ${count} local item${count === 1 ? '' : 's'}.`,
     invalid: 'That file does not look like a Gratia Ghost Backup.',
     localItems: (count) => `${count} local item${count === 1 ? '' : 's'}`,
+    edgeTitle: 'M3 Edge',
+    edgeBody:
+      'Optional cross-browser mirror for energy marks. Ghost Mode still saves locally first; Edge sync runs quietly in the background.',
+    edgeUrl: 'Worker URL',
+    edgeToken: 'Write token',
+    edgeTokenPlaceholder: 'Paste M3_WRITE_TOKEN',
+    edgeSave: 'Save Edge config',
+    edgeTest: 'Test Edge',
+    edgeSync: 'Sync energy now',
+    edgeClear: 'Clear token',
+    edgeConfigured: 'M3 Edge token is saved in this browser.',
+    edgeNotConfigured: 'No M3 Edge token saved here yet.',
+    edgeSaved: 'M3 Edge config saved locally.',
+    edgeCleared: 'M3 Edge token cleared.',
+    edgeOnline: (storage) => `M3 Edge online${storage ? ` · ${storage}` : ''}.`,
+    edgeAuthFailed: 'M3 Edge is online, but the write token is not accepted.',
+    edgeSynced: 'Latest local energy mark synced to M3 Edge.',
+    edgeFailed: 'Could not reach M3 Edge from this browser.',
+    edgeSyncMissing: 'No local energy mark or token found for sync.',
   },
   es: {
     eyebrow: 'Modo Ghost',
@@ -80,6 +127,25 @@ const copy: Record<
     imported: (count) => `Importados ${count} elemento${count === 1 ? '' : 's'} locales.`,
     invalid: 'Ese archivo no parece un Gratia Ghost Backup.',
     localItems: (count) => `${count} elemento${count === 1 ? '' : 's'} locales`,
+    edgeTitle: 'M3 Edge',
+    edgeBody:
+      'Espejo opcional entre navegadores para marcas de energía. Ghost Mode guarda local primero; Edge sincroniza en silencio en segundo plano.',
+    edgeUrl: 'URL del Worker',
+    edgeToken: 'Token de escritura',
+    edgeTokenPlaceholder: 'Pega M3_WRITE_TOKEN',
+    edgeSave: 'Guardar configuración Edge',
+    edgeTest: 'Probar Edge',
+    edgeSync: 'Sincronizar energía ahora',
+    edgeClear: 'Borrar token',
+    edgeConfigured: 'El token de M3 Edge está guardado en este navegador.',
+    edgeNotConfigured: 'Todavía no hay token de M3 Edge guardado aquí.',
+    edgeSaved: 'Configuración de M3 Edge guardada localmente.',
+    edgeCleared: 'Token de M3 Edge borrado.',
+    edgeOnline: (storage) => `M3 Edge online${storage ? ` · ${storage}` : ''}.`,
+    edgeAuthFailed: 'M3 Edge está online, pero el token de escritura no es aceptado.',
+    edgeSynced: 'La última marca local de energía se sincronizó con M3 Edge.',
+    edgeFailed: 'No se pudo contactar M3 Edge desde este navegador.',
+    edgeSyncMissing: 'No hay marca local de energía o token para sincronizar.',
   },
   ro: {
     eyebrow: 'Ghost Mode',
@@ -100,6 +166,25 @@ const copy: Record<
     imported: (count) => `Am importat ${count} element${count === 1 ? '' : 'e'} locale.`,
     invalid: 'Fișierul acesta nu pare un Gratia Ghost Backup.',
     localItems: (count) => `${count} element${count === 1 ? '' : 'e'} locale`,
+    edgeTitle: 'M3 Edge',
+    edgeBody:
+      'Mirror opțional între browsere pentru marcajele de energie. Ghost Mode salvează local primul; Edge sync rulează discret în fundal.',
+    edgeUrl: 'URL Worker',
+    edgeToken: 'Token de scriere',
+    edgeTokenPlaceholder: 'Lipește M3_WRITE_TOKEN',
+    edgeSave: 'Salvează config Edge',
+    edgeTest: 'Testează Edge',
+    edgeSync: 'Sincronizează energia acum',
+    edgeClear: 'Șterge token',
+    edgeConfigured: 'Tokenul M3 Edge este salvat în browserul acesta.',
+    edgeNotConfigured: 'Nu există încă token M3 Edge salvat aici.',
+    edgeSaved: 'Configurația M3 Edge a fost salvată local.',
+    edgeCleared: 'Tokenul M3 Edge a fost șters.',
+    edgeOnline: (storage) => `M3 Edge online${storage ? ` · ${storage}` : ''}.`,
+    edgeAuthFailed: 'M3 Edge este online, dar tokenul de scriere nu este acceptat.',
+    edgeSynced: 'Ultimul marcaj local de energie a fost sincronizat cu M3 Edge.',
+    edgeFailed: 'Nu am putut contacta M3 Edge din browserul acesta.',
+    edgeSyncMissing: 'Nu există marcaj local de energie sau token pentru sync.',
   },
 };
 
@@ -138,6 +223,10 @@ function BackupContent() {
   const [locale, setLocale] = useState<Locale>(defaultLocale as Locale);
   const [mode, setMode] = useState<BackupMode>('merge');
   const [status, setStatus] = useState<string>('');
+  const [edgeStatus, setEdgeStatus] = useState<string>('');
+  const [edgeUrl, setEdgeUrl] = useState(M3_EDGE_DEFAULT_URL);
+  const [edgeToken, setEdgeToken] = useState('');
+  const [edgeHasToken, setEdgeHasToken] = useState(false);
   const [itemCount, setItemCount] = useState(0);
   const t = copy[locale] ?? copy.en;
 
@@ -158,6 +247,18 @@ function BackupContent() {
   useEffect(() => {
     setItemCount(Object.keys(readLocalItems()).length);
   }, [status]);
+
+  useEffect(() => {
+    const syncEdgeConfig = () => {
+      const savedToken = readM3EdgeToken();
+      setEdgeUrl(readM3EdgeUrl());
+      setEdgeHasToken(Boolean(savedToken));
+    };
+
+    syncEdgeConfig();
+    window.addEventListener('gratia:m3edge:change', syncEdgeConfig);
+    return () => window.removeEventListener('gratia:m3edge:change', syncEdgeConfig);
+  }, [edgeStatus]);
 
   const backupName = useMemo(() => {
     const stamp = new Date().toISOString().slice(0, 10);
@@ -224,6 +325,37 @@ function BackupContent() {
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  };
+
+  const saveEdge = () => {
+    saveM3EdgeConfig({ url: edgeUrl, token: edgeToken });
+    setEdgeToken('');
+    setEdgeStatus(t.edgeSaved);
+  };
+
+  const clearEdge = () => {
+    clearM3EdgeToken();
+    setEdgeToken('');
+    setEdgeStatus(t.edgeCleared);
+  };
+
+  const testEdge = async () => {
+    try {
+      const health = await checkM3EdgeHealth(edgeUrl);
+      if (!health.ok) {
+        setEdgeStatus(t.edgeFailed);
+        return;
+      }
+      const authOk = edgeHasToken ? await checkM3EdgeWriteAuth() : false;
+      setEdgeStatus(authOk ? t.edgeOnline(health.storage) : t.edgeAuthFailed);
+    } catch {
+      setEdgeStatus(t.edgeFailed);
+    }
+  };
+
+  const syncEnergyNow = async () => {
+    const result = await syncLatestEnergyMarkWithM3Edge();
+    setEdgeStatus(result.ok ? t.edgeSynced : result.error === 'missing_local_mark' || result.error === 'missing_token' ? t.edgeSyncMissing : t.edgeFailed);
   };
 
   return (
@@ -298,6 +430,57 @@ function BackupContent() {
             </Button>
           </Card>
         </section>
+
+        <Card variant="plain" className="space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold">{t.edgeTitle}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-[color:var(--color-muted)]">
+              {t.edgeBody}
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+            <label className="grid gap-2 text-sm">
+              <span className="font-medium">{t.edgeUrl}</span>
+              <input
+                type="url"
+                value={edgeUrl}
+                onChange={(event) => setEdgeUrl(event.target.value)}
+                className="min-h-10 rounded-md border border-[color:var(--color-border)] bg-transparent px-3 text-sm outline-none focus:border-[color:var(--color-accent)]"
+              />
+            </label>
+
+            <label className="grid gap-2 text-sm">
+              <span className="font-medium">{t.edgeToken}</span>
+              <input
+                type="password"
+                value={edgeToken}
+                onChange={(event) => setEdgeToken(event.target.value)}
+                placeholder={edgeHasToken ? '••••••••••••••••' : t.edgeTokenPlaceholder}
+                className="min-h-10 rounded-md border border-[color:var(--color-border)] bg-transparent px-3 text-sm outline-none focus:border-[color:var(--color-accent)]"
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Button type="button" tone="accent" onClick={saveEdge}>
+              {t.edgeSave}
+            </Button>
+            <Button type="button" variant="outline" onClick={() => void testEdge()}>
+              {t.edgeTest}
+            </Button>
+            <Button type="button" variant="outline" onClick={() => void syncEnergyNow()}>
+              {t.edgeSync}
+            </Button>
+            <Button type="button" variant="ghost" onClick={clearEdge}>
+              {t.edgeClear}
+            </Button>
+          </div>
+
+          <p className="text-xs text-[color:var(--color-muted)]">
+            {edgeStatus || (edgeHasToken ? t.edgeConfigured : t.edgeNotConfigured)}
+          </p>
+        </Card>
 
         {status ? (
           <section className="flex flex-wrap items-center gap-3 border-t border-[color:var(--color-border)] pt-6">
