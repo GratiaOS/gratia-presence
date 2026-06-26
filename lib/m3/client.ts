@@ -1,9 +1,10 @@
 /**
- * Local Emotional Ledger
- * ----------------------
+ * M3 Client — Emotional Ledger Bridge
+ * ------------------------------------
+ * Whisper: "presence writes itself into memory." 🌬️
  *
  * Purpose
- *  • Clean wrapper over browser-local ledger entries
+ *  • Clean wrapper over M3 /emotions endpoints
  *  • Type-safe payload construction for ledger entries
  *  • Silent failure handling (logs but doesn't break UI)
  *
@@ -11,7 +12,7 @@
  *  import { logEmotionToM3 } from '@/lib/m3/client';
  *
  *  await logEmotionToM3({
- *    who: 'local-user',
+ *    who: 'Razvan',
  *    kind: 'coherence',
  *    intensity: 0.9,
  *    sealed: true,
@@ -73,67 +74,75 @@ export type M3EmotionPayload = {
   band?: string;
 };
 
-const STORAGE_KEY = 'gratia.emotional-ledger';
-
-function readLedger(): M3Emotion[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
+const API_URL = process.env.NEXT_PUBLIC_M3_API_URL || 'http://localhost:3033';
 
 /**
- * Log an emotion signal to the browser-local emotional ledger.
+ * Log an emotion signal to M3 Emotional Ledger.
  * Returns true on success, false on failure (non-blocking).
  */
 export async function logEmotionToM3(payload: M3EmotionPayload): Promise<boolean> {
   try {
-    if (typeof window === 'undefined') return false;
-    const existing = readLedger();
-    const entry: M3Emotion = {
-      ...payload,
-      id: Date.now(),
-      ts: new Date().toISOString(),
-      band: (payload.band as M3Band | undefined) ?? 'open',
-    };
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify([entry, ...existing].slice(0, 100)));
+    const res = await fetch(`${API_URL}/emotions/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => '(no body)');
+      throw new Error(`M3 responded with ${res.status}: ${errorText}`);
+    }
+
+    const data = await res.json();
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Local Ledger] Emotion logged:', entry);
+      console.log('🛰️ [M3 Client] Emotion logged:', data);
     }
 
     return true;
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
-      console.error('[Local Ledger] Failed to log emotion:', error);
+      console.error('🌬️ [M3 Client] Failed to log emotion:', error);
     }
-    // Silent failure: UI should not break if localStorage is unavailable.
+    // Silent failure — UI should not break if M3 is down
     return false;
   }
 }
 
 /**
- * Fetch recent emotions from the browser-local emotional ledger.
+ * Fetch recent emotions from M3 Emotional Ledger.
  * Returns array of emotions (last 20), or empty array on failure.
  */
 export async function getEmotions(): Promise<M3Emotion[]> {
   try {
-    const data = readLedger().slice(0, 20);
+    const res = await fetch(`${API_URL}/emotions/recent`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Disable cache for fresh data
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text().catch(() => '(no body)');
+      throw new Error(`M3 responded with ${res.status}: ${errorText}`);
+    }
+
+    const data: M3Emotion[] = await res.json();
 
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[Local Ledger] Fetched ${data.length} emotions`);
+      console.log(`🛰️ [M3 Client] Fetched ${data.length} emotions`);
     }
 
     return data;
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
-      console.error('[Local Ledger] Failed to fetch emotions:', error);
+      console.error('🌬️ [M3 Client] Failed to fetch emotions:', error);
     }
-    // Silent failure: return empty array.
+    // Silent failure — return empty array
     return [];
   }
 }

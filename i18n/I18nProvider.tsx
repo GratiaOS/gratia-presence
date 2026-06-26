@@ -38,14 +38,6 @@ function normalizeLocale(value?: string | null): Locale {
   return defaultLocale as Locale;
 }
 
-function readBrowserLocale(): Locale {
-  if (typeof window === 'undefined') return defaultLocale as Locale;
-  const url = new URL(window.location.href);
-  const rawQuery = url.searchParams.get(LOCALE_QUERY_KEY);
-  const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-  return normalizeLocale(rawQuery ?? stored);
-}
-
 function getNested(obj: any, path: string): unknown {
   return path.split('.').reduce((acc, part) => {
     if (acc && typeof acc === 'object' && part in acc) return acc[part];
@@ -78,7 +70,7 @@ type ProviderProps = {
 export function I18nProvider({ locale, children }: ProviderProps) {
   const [activeLocale, setActiveLocale] = useState<Locale>(() => {
     if (locale) return normalizeLocale(locale);
-    return readBrowserLocale();
+    return defaultLocale as Locale;
   });
 
   const setLocale = useCallback((next: Locale) => {

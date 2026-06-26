@@ -1,0 +1,98 @@
+{
+  "first-note": {
+    "en": {
+      "title": "The First Gratia Note",
+      "summary": "This is not a manifesto. This is a note. A note that was heard, and sung back.",
+      "tags": [
+        "note",
+        "manifesto",
+        "rhythm"
+      ],
+      "updated": "2025-05-25T00:00:00.000Z"
+    },
+    "es": {
+      "title": "La Primera Nota de Gratia",
+      "summary": "Esto no es un manifiesto. Es una nota. Una nota que fue escuchada y cantada de vuelta.",
+      "tags": [
+        "nota",
+        "manifiesto",
+        "ritmo"
+      ],
+      "updated": "2025-05-25T00:00:00.000Z"
+    },
+    "ro": {
+      "title": "Prima Notă Gratia",
+      "summary": "Aceasta nu este un manifest. Este o notă. O notă care a fost auzită și cântată înapoi.",
+      "tags": [
+        "notă",
+        "manifest",
+        "ritm"
+      ],
+      "updated": "2025-05-25T00:00:00.000Z"
+    }
+  },
+  "own-system-failed": {
+    "en": {
+      "title": "I Spent Years Building Products for Millions of People. Then My Own System Failed.",
+      "summary": "A reflection on the limits of optimization, productivity systems, and finding natural rhythm.",
+      "tags": [
+        "rhythm",
+        "burnout",
+        "integration"
+      ],
+      "updated": "2026-06-04T00:00:00.000Z"
+    },
+    "es": {
+      "title": "Pasé años creando productos para millones de personas. Luego mi propio sistema falló.",
+      "summary": "Una reflexión sobre los límites de la optimización, los sistemas de productividad y la búsqueda del ritmo natural.",
+      "tags": [
+        "ritmo",
+        "burnout",
+        "integración"
+      ],
+      "updated": "2026-06-04T00:00:00.000Z"
+    },
+    "ro": {
+      "title": "Am petrecut ani de zile construind produse pentru milioane de oameni. Apoi propriul meu sistem a eșuat.",
+      "summary": "O reflecție asupra limitelor optimizării, sistemelor de productivitate și găsirii ritmului natural.",
+      "tags": [
+        "ritm",
+        "burnout",
+        "integrare"
+      ],
+      "updated": "2026-06-04T00:00:00.000Z"
+    }
+  },
+  "never-time-management": {
+    "en": {
+      "title": "The Problem Was Never Time Management",
+      "summary": "Productivity systems optimize output. But when the real problem is unprocessed experience, no app can help you stop.",
+      "tags": [
+        "productivity",
+        "integration",
+        "burnout"
+      ],
+      "updated": "2026-06-13T00:00:00.000Z"
+    },
+    "es": {
+      "title": "El problema nunca fue la gestión del tiempo",
+      "summary": "Los sistemas de productividad optimizan el rendimiento. Pero cuando el verdadero problema es la experiencia no procesada, ninguna app puede ayudarte a parar.",
+      "tags": [
+        "productividad",
+        "integración",
+        "burnout"
+      ],
+      "updated": "2026-06-13T00:00:00.000Z"
+    },
+    "ro": {
+      "title": "Problema nu a fost niciodată managementul timpului",
+      "summary": "Sistemele de productivitate optimizează output-ul. Dar când adevărata problemă e experiența neprocesată, nicio aplicație nu te poate ajuta să te oprești.",
+      "tags": [
+        "productivitate",
+        "integrare",
+        "burnout"
+      ],
+      "updated": "2026-06-13T00:00:00.000Z"
+    }
+  }
+}

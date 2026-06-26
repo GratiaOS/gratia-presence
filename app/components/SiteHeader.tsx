@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { Button, Sheet } from '@gratiaos/ui';
 import GratiaMark from '@/components/GratiaMark';
 import EnergySystemClient from '@/components/energy/EnergySystemClient';
-import { defaultLocale, supportedLocales } from '../../i18n/config';
 import type { Locale } from '../../i18n/resources';
 import LanguageToggle from './LanguageToggle';
 import SkinToggle from './SkinToggle';
+import { useLocale } from '../../i18n/useLocale';
 
 const LOCALE_STORAGE_KEY = 'gratia.locale';
 const LOCALE_QUERY_KEY = 'lang';
@@ -19,6 +18,7 @@ const labels: Record<
   {
     home: string;
     journal: string;
+    notes: string;
     about: string;
     support: string;
     backup: string;
@@ -29,6 +29,7 @@ const labels: Record<
   en: {
     home: 'Gratia home',
     journal: 'Lunar Journal',
+    notes: 'Notes',
     about: 'About',
     support: 'Support',
     backup: 'Backup',
@@ -38,6 +39,7 @@ const labels: Record<
   es: {
     home: 'Inicio Gratia',
     journal: 'Diario Lunar',
+    notes: 'Notas',
     about: 'Acerca de',
     support: 'Apoyar',
     backup: 'Copia',
@@ -47,6 +49,7 @@ const labels: Record<
   ro: {
     home: 'Acasă Gratia',
     journal: 'Jurnal Lunar',
+    notes: 'Note',
     about: 'Despre',
     support: 'Susține',
     backup: 'Copie',
@@ -55,34 +58,10 @@ const labels: Record<
   },
 };
 
-function normalizeLocale(value?: string | null): Locale {
-  if (value && supportedLocales.includes(value)) return value as Locale;
-  return defaultLocale as Locale;
-}
-
 export default function SiteHeader() {
-  const searchParams = useSearchParams();
   const [navOpen, setNavOpen] = useState(false);
-  const [locale, setLocale] = useState<Locale>(() =>
-    normalizeLocale(searchParams?.get(LOCALE_QUERY_KEY))
-  );
+  const locale = useLocale();
   const t = labels[locale] ?? labels.en;
-
-  useEffect(() => {
-    const syncLocale = (event?: Event) => {
-      const eventLocale =
-        event instanceof CustomEvent && typeof event.detail?.locale === 'string'
-          ? event.detail.locale
-          : null;
-      const queryLocale = searchParams?.get(LOCALE_QUERY_KEY);
-      const stored =
-        typeof window !== 'undefined' ? window.localStorage.getItem(LOCALE_STORAGE_KEY) : null;
-      setLocale(normalizeLocale(eventLocale ?? queryLocale ?? stored));
-    };
-    syncLocale();
-    window.addEventListener('gratia:localechange', syncLocale);
-    return () => window.removeEventListener('gratia:localechange', syncLocale);
-  }, [searchParams]);
 
   return (
     <header className="w-full border-b border-[color:var(--color-border)] bg-[color:var(--color-surface)]/88">
@@ -91,12 +70,15 @@ export default function SiteHeader() {
           <span className="inline-block h-8 w-8 shrink-0 text-[color:var(--color-accent)]">
             <GratiaMark />
           </span>
-          <span className="hidden font-semibold tracking-wide sm:inline">GratiaOS</span>
+          <span className="hidden font-semibold tracking-wide sm:inline">Gratia</span>
         </Link>
 
         <nav className="hidden items-center text-sm md:flex">
           <Link href="/today" className="p-3 underline-offset-4 hover:underline">
             {t.journal}
+          </Link>
+          <Link href="/notes" className="p-3 underline-offset-4 hover:underline">
+            {t.notes}
           </Link>
           <Link href="/about" className="p-3 underline-offset-4 hover:underline">
             {t.about}
@@ -130,6 +112,9 @@ export default function SiteHeader() {
         <nav className="grid gap-1 text-base">
           <Link href="/today" className="py-3 underline-offset-4 hover:underline" onClick={() => setNavOpen(false)}>
             {t.journal}
+          </Link>
+          <Link href="/notes" className="py-3 underline-offset-4 hover:underline" onClick={() => setNavOpen(false)}>
+            {t.notes}
           </Link>
           <Link href="/about" className="py-3 underline-offset-4 hover:underline" onClick={() => setNavOpen(false)}>
             {t.about}

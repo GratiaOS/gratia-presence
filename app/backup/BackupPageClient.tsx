@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Card } from '@gratiaos/ui';
-import { defaultLocale, supportedLocales } from '../../i18n/config';
+import { useLocale } from '../../i18n/useLocale';
 import type { Locale } from '../../i18n/resources';
 import {
   checkM3EdgeWriteAuth,
@@ -188,11 +188,6 @@ const copy: Record<
   },
 };
 
-function normalizeLocale(value?: string | null): Locale {
-  if (value && supportedLocales.includes(value)) return value as Locale;
-  return defaultLocale as Locale;
-}
-
 function isExportableKey(key: string): boolean {
   return EXPORT_KEY_PREFIXES.some((prefix) => key.startsWith(prefix));
 }
@@ -220,7 +215,7 @@ function isGhostBackup(value: unknown): value is GhostBackup {
 
 function BackupContent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [locale, setLocale] = useState<Locale>(defaultLocale as Locale);
+  const locale = useLocale();
   const [mode, setMode] = useState<BackupMode>('merge');
   const [status, setStatus] = useState<string>('');
   const [edgeStatus, setEdgeStatus] = useState<string>('');
@@ -229,20 +224,6 @@ function BackupContent() {
   const [edgeHasToken, setEdgeHasToken] = useState(false);
   const [itemCount, setItemCount] = useState(0);
   const t = copy[locale] ?? copy.en;
-
-  useEffect(() => {
-    const syncLocale = (event?: Event) => {
-      const eventLocale =
-        event instanceof CustomEvent && typeof event.detail?.locale === 'string'
-          ? event.detail.locale
-          : null;
-      setLocale(normalizeLocale(eventLocale ?? window.localStorage.getItem(LOCALE_STORAGE_KEY)));
-    };
-
-    syncLocale();
-    window.addEventListener('gratia:localechange', syncLocale);
-    return () => window.removeEventListener('gratia:localechange', syncLocale);
-  }, []);
 
   useEffect(() => {
     setItemCount(Object.keys(readLocalItems()).length);
@@ -365,7 +346,7 @@ function BackupContent() {
           <p className="text-xs tracking-[0.25em] text-[color:var(--color-muted)] uppercase">
             {t.eyebrow}
           </p>
-          <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-6xl">
+          <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-5xl">
             {t.title}
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-[color:var(--color-muted)]">

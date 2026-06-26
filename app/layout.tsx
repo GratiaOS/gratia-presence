@@ -7,12 +7,12 @@ import { ClientProviders } from '@/components/ClientProviders';
 import SiteHeader from '@/components/SiteHeader';
 import PwaRegister from '@/components/PwaRegister';
 import { SkinFieldProvider } from './skin/SkinFieldProvider';
-import { defaultLocale, supportedLocales } from '../i18n/config';
+import { defaultLocale } from '../i18n/config';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://gratia.space'),
   title: {
-    default: 'Gratia - Personal OS',
+    default: 'Gratia - A calm place to think.',
     template: '%s | Gratia',
   },
   description:
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
   },
   openGraph: {
-    title: 'Gratia - Personal OS',
+    title: 'Gratia - A calm place to think.',
     description: 'Quiet software for presence, reflection, and rhythm.',
     url: 'https://gratia.space',
     siteName: 'Gratia',
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary',
-    title: 'Gratia - Personal OS',
+    title: 'Gratia - A calm place to think.',
     description: 'Quiet software for presence, reflection, and rhythm.',
   },
   icons: {
@@ -46,57 +46,29 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const initialSkin = undefined;
-
   const setInitialSkin = `
     try {
-      if (!document.documentElement.dataset.skinId) {
-        const stored =
-          window.localStorage.getItem('gratia.skinId');
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const next = stored
-          ? (prefersDark && stored === 'SUN' ? 'MOON' : stored)
-          : prefersDark ? 'MOON' : 'SUN';
-        document.documentElement.dataset.skinId = next;
+      const normalize = (value) => {
+        const normalized = typeof value === 'string' ? value.trim().toUpperCase() : null;
+        return ['SUN', 'MOON', 'GARDEN', 'STELLAR', 'OFF'].includes(normalized)
+          ? normalized
+          : null;
+      };
+      const stored = normalize(window.localStorage.getItem('gratia.skinId'));
+      const prefersDark =
+        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const next = stored ?? (prefersDark ? 'MOON' : 'SUN');
+      document.documentElement.dataset.skinId = next;
+      if (stored && window.localStorage.getItem('gratia.skinId') !== next) {
+        window.localStorage.setItem('gratia.skinId', next);
       }
     } catch (e) {
       document.documentElement.dataset.skinId = 'MOON';
     }
   `;
-  const setInitialTypo = `
-    try {
-      const stored = window.localStorage.getItem('gratia.typo');
-      const next = stored === 'mono' ? 'mono' : 'ui';
-      document.documentElement.dataset.typo = next;
-    } catch (e) {
-      document.documentElement.dataset.typo = 'ui';
-    }
-  `;
-  const setInitialLocale = `
-    try {
-      const supported = ${JSON.stringify(supportedLocales)};
-      const params = new URLSearchParams(window.location.search);
-      const fromQuery = params.get('lang');
-      const stored = window.localStorage.getItem('gratia.locale');
-      const pick = (value) => (value && supported.includes(value) ? value : null);
-      const next = pick(fromQuery) || pick(stored) || '${defaultLocale}';
-      document.documentElement.lang = next;
-      if (fromQuery && pick(fromQuery)) {
-        window.localStorage.setItem('gratia.locale', next);
-      }
-    } catch (e) {
-      document.documentElement.lang = '${defaultLocale}';
-    }
-  `;
 
   return (
-    <html
-      lang={defaultLocale}
-      dir="ltr"
-      data-typo="ui"
-      data-skin-id={initialSkin}
-      suppressHydrationWarning
-    >
+    <html lang={defaultLocale} dir="ltr" data-typo="ui" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#f3eee2" />
         <meta name="mobile-web-app-capable" content="yes" />
@@ -123,12 +95,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         />
         <Script id="gratia-initial-skin" strategy="beforeInteractive">
           {setInitialSkin}
-        </Script>
-        <Script id="gratia-initial-typo" strategy="beforeInteractive">
-          {setInitialTypo}
-        </Script>
-        <Script id="gratia-initial-locale" strategy="beforeInteractive">
-          {setInitialLocale}
         </Script>
       </head>
       <body className="bg-surface text-on-surface">

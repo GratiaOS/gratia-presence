@@ -1,10 +1,19 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type KeyboardEvent,
+} from 'react';
 import { Badge, Button, Card, Field } from '@gratiaos/ui';
 import SunCalc from 'suncalc';
 import { I18nProvider, useTranslation } from '../../i18n/I18nProvider';
 import type { Locale } from '../../i18n/resources';
+import { getGratiaLexicon } from '../../i18n/gratia-lexicon';
 import { getContent, type LunarPage, type LunarPhase } from '../../lib/lunar-journal/content';
 import {
   createLunarEntry,
@@ -20,6 +29,15 @@ type Recommendation = {
   age: number;
   primary: LunarPage;
 };
+
+type ExperienceAtmosphere = 'soft' | 'focused' | undefined;
+
+const FIRST_TYPING_FOCUSED_MS = 2500;
+const FIRST_TYPING_SOFT_MS = 8000;
+const IDLE_PRESENCE_SOFT_MS = 12000;
+const BACKSPACE_BURST_WINDOW_MS = 1800;
+const BACKSPACE_BURST_COUNT = 4;
+const ATMOSPHERE_DECAY_MS = 90000;
 
 function phaseFromAge(age: number): LunarPhase {
   if (age < 4.5 || age >= 28) return 'new-moon';
@@ -94,15 +112,52 @@ function getDelayUntilNextLocalDay() {
 function TodayJournal() {
   const { locale } = useTranslation('lunar');
   const content = getContent(locale);
+  const lexicon = getGratiaLexicon(locale);
   const [journalDate, setJournalDate] = useState(() => getLocalJournalDate());
   const recommendation = useMemo(
     () => getRecommendation(journalDate, locale),
     [journalDate, locale]
   );
+
+  const orientationHeading = useMemo(() => {
+    const headings = {
+      'new-moon': lexicon.orientation.youMightWonder,
+      'waxing-moon': lexicon.orientation.quietDirection,
+      'full-moon': lexicon.orientation.somethingMayBeAsking,
+      'waning-moon': lexicon.orientation.softPointOfOrientation,
+    };
+
+    return headings[recommendation.phase];
+  }, [lexicon.orientation, recommendation.phase]);
   const phaseInfo = content.phases[recommendation.phase];
   const [draft, setDraft] = useState('');
   const [entries, setEntries] = useState<LunarJournalEntry[]>([]);
   const [savedNotice, setSavedNotice] = useState(false);
+  const [experienceAtmosphere, setExperienceAtmosphere] = useState<ExperienceAtmosphere>();
+  const [experienceDepth, setExperienceDepth] = useState<'0' | '1'>('0');
+  const openedAtRef = useRef<number | null>(null);
+  const firstTypingSeenRef = useRef(false);
+  const backspaceTimesRef = useRef<number[]>([]);
+  const idleTimerRef = useRef<number | null>(null);
+  const decayTimerRef = useRef<number | null>(null);
+  const savedNoticeTimerRef = useRef<number | null>(null);
+
+  const setAtmosphere = useCallback(
+    (next: ExperienceAtmosphere, depth: '0' | '1', shouldDecay = true) => {
+      setExperienceAtmosphere(next);
+      setExperienceDepth(depth);
+
+      if (decayTimerRef.current) window.clearTimeout(decayTimerRef.current);
+
+      if (shouldDecay) {
+        decayTimerRef.current = window.setTimeout(() => {
+          setExperienceAtmosphere(undefined);
+          setExperienceDepth('0');
+        }, ATMOSPHERE_DECAY_MS);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     const refreshJournalDate = () => setJournalDate(getLocalJournalDate());
@@ -123,8 +178,50 @@ function TodayJournal() {
   }, [journalDate]);
 
   useEffect(() => {
+    openedAtRef.current = performance.now();
+    idleTimerRef.current = window.setTimeout(() => {
+      if (!firstTypingSeenRef.current) {
+        setAtmosphere('soft', '0', false);
+      }
+    }, IDLE_PRESENCE_SOFT_MS);
+
+    return () => {
+      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+      if (decayTimerRef.current) window.clearTimeout(decayTimerRef.current);
+      if (savedNoticeTimerRef.current) window.clearTimeout(savedNoticeTimerRef.current);
+    };
+  }, [setAtmosphere]);
+
+  useEffect(() => {
     setEntries(listLunarEntries());
   }, []);
+
+  const handleDraftChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    if (!firstTypingSeenRef.current) {
+      firstTypingSeenRef.current = true;
+      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+      const elapsed = performance.now() - (openedAtRef.current ?? performance.now());
+
+      if (elapsed <= FIRST_TYPING_FOCUSED_MS) setAtmosphere('focused', '1');
+      else if (elapsed >= FIRST_TYPING_SOFT_MS) setAtmosphere('soft', '0');
+    }
+
+    setDraft(event.target.value);
+  };
+
+  const handleDraftKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key !== 'Backspace') return;
+
+    const now = performance.now();
+    backspaceTimesRef.current = [...backspaceTimesRef.current, now].filter(
+      (timestamp) => now - timestamp < BACKSPACE_BURST_WINDOW_MS
+    );
+
+    if (backspaceTimesRef.current.length >= BACKSPACE_BURST_COUNT) {
+      backspaceTimesRef.current = [];
+      setAtmosphere('soft', '0');
+    }
+  };
 
   const saveEntry = () => {
     const trimmed = draft.trim();
@@ -139,7 +236,8 @@ function TodayJournal() {
     setDraft('');
     setEntries(listLunarEntries());
     setSavedNotice(true);
-    window.setTimeout(() => setSavedNotice(false), 1600);
+    if (savedNoticeTimerRef.current) window.clearTimeout(savedNoticeTimerRef.current);
+    savedNoticeTimerRef.current = window.setTimeout(() => setSavedNotice(false), 1600);
   };
 
   const removeEntry = (id: string) => {
@@ -148,12 +246,16 @@ function TodayJournal() {
   };
 
   return (
-    <main className="min-h-screen">
-      <div className="mx-auto flex max-w-4xl flex-col gap-12 p-5 pb-16 sm:px-8 sm:py-16">
+    <main
+      className="today-experience-root ambient-flow min-h-screen"
+      data-depth={experienceDepth}
+      data-atmosphere={experienceAtmosphere}
+    >
+      <div className="relative z-10 mx-auto flex max-w-4xl flex-col gap-12 p-5 pb-16 sm:px-8 sm:py-16">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs tracking-[0.25em] text-[color:var(--color-muted)] uppercase">
-              {content.ui.eyebrow}
+              {lexicon.journal.eyebrow}
             </p>
             <div className="mt-4 flex items-center gap-2">
               <span aria-hidden="true" className="text-5xl/7">
@@ -174,40 +276,46 @@ function TodayJournal() {
             </h2>
 
             {recommendation.primary.intro.length > 0 ? (
-              <div className="mt-3 max-w-2xl space-y-2 text-[color:var(--color-muted)]">
+              <div className="mt-3 max-w-2xl space-y-2 leading-relaxed">
                 {recommendation.primary.intro.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
             ) : null}
 
-            {recommendation.primary.prompts.length > 0 ? (
-              <ol className="mt-8 grid list-inside list-decimal gap-3 font-serif italic">
-                {recommendation.primary.prompts.map((prompt) => (
-                  <li key={prompt}>{prompt}</li>
-                ))}
-              </ol>
+            {recommendation.primary.invitations.length > 0 ? (
+              <div className="mt-6 max-w-2xl space-y-3 border-t border-dashed border-[color:var(--color-muted)]/10 pt-6">
+                <p className="text-sm font-semibold">🌿 {orientationHeading}</p>
+                <div className="space-y-2 text-[color:var(--color-muted)]">
+                  {recommendation.primary.invitations.map((invitation) => (
+                    <p key={invitation} className="text-sm leading-relaxed italic">
+                      {invitation}
+                    </p>
+                  ))}
+                </div>
+              </div>
             ) : null}
 
             <section className="mt-8 space-y-3">
-              <Field id="lunar-entry" label={content.ui.writingLabel}>
+              <Field id="lunar-entry" label={`🪶 ${lexicon.writingSpace.placeForYourWords}`}>
                 {(fieldProps) => (
                   <textarea
                     {...fieldProps}
                     value={draft}
-                    onChange={(event) => setDraft(event.target.value)}
-                    placeholder={content.ui.writingPlaceholder}
+                    onChange={handleDraftChange}
+                    onKeyDown={handleDraftKeyDown}
+                    placeholder={lexicon.writingSpace.noNeedToShapeIt}
                     rows={6}
                   />
                 )}
               </Field>
               <div className="flex flex-wrap items-center gap-3">
                 <Button tone="accent" onClick={saveEntry} disabled={!draft.trim()}>
-                  {content.ui.save}
+                  {lexicon.actions.keep}
                 </Button>
                 {savedNotice ? (
                   <span className="text-sm text-[color:var(--color-muted)]">
-                    {content.ui.saved}
+                    {lexicon.feedback.keptLocally}
                   </span>
                 ) : null}
               </div>
@@ -217,11 +325,11 @@ function TodayJournal() {
           <aside className="space-y-5">
             <section className="space-y-3">
               <h2 className="text-xs tracking-[0.25em] text-[color:var(--color-muted)] uppercase">
-                {content.ui.saved}
+                {lexicon.journal.savedEntries}
               </h2>
               {entries.length === 0 ? (
                 <p className="text-sm leading-6 text-[color:var(--color-muted)]">
-                  {content.ui.empty}
+                  {lexicon.journal.emptyEntries}
                 </p>
               ) : (
                 <div className="grid gap-3">
@@ -236,11 +344,13 @@ function TodayJournal() {
                           onClick={() => removeEntry(entry.id)}
                           className="text-xs text-[color:var(--color-muted)] underline-offset-4 hover:underline"
                         >
-                          {content.ui.delete}
+                          {lexicon.actions.delete}
                         </button>
                       </div>
-                      <p className="font-gratia mt-3 tracking-tight">{entry.pageTitle}</p>
-                      <p className="mt-1 max-h-24 overflow-hidden text-sm">{entry.content}</p>
+                      <p className="font-gratia mt-3 font-medium tracking-tight">
+                        {entry.pageTitle}
+                      </p>
+                      <p className="mt-2 text-sm">{entry.content}</p>
                     </Card>
                   ))}
                 </div>

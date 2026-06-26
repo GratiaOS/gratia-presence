@@ -1,26 +1,25 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { Card } from '@gratiaos/ui';
-import { defaultLocale } from '../../i18n/config';
+import { useLocale } from '../../i18n/useLocale';
 
 const copy = {
   en: {
     eyebrow: 'Support the Node',
     title: 'Help keep Gratia quiet, local, and alive.',
     subtitle:
-      'Gratia is a living project: software, ritual, language, and care. If it gives you clarity, you can help sustain the work.',
+      'Gratia is built slowly, without extraction. If this quiet space brings you clarity, you are welcome to help keep it alive.',
     sections: [
       {
-        title: 'What your support holds',
+        title: 'Sustaining the quiet',
         body: [
           'Focused development time for Gratia, the Lunar Journal, local-first tools, and Garden Core.',
           'Infrastructure, domains, hardware, testing, writing, and the slow maintenance that keeps a project coherent.',
         ],
       },
       {
-        title: 'How value returns',
+        title: 'Value echoing back',
         body: [
           'Money is not the point. It is one way value echoes back into the field.',
           'You are not buying access or unlocking a tier. You are helping a small node keep building without turning the work into extraction.',
@@ -42,17 +41,17 @@ const copy = {
     eyebrow: 'Sostén el nodo',
     title: 'Ayuda a mantener Gratia tranquila, local y viva.',
     subtitle:
-      'Gratia es un proyecto vivo: software, ritual, lenguaje y cuidado. Si te da claridad, puedes ayudar a sostener el trabajo.',
+      'Gratia se construye lentamente, sin extracción. Si este espacio tranquilo te aporta claridad, eres bienvenido a ayudar a mantenerlo vivo.',
     sections: [
       {
-        title: 'Qué sostiene tu apoyo',
+        title: 'Sostener el silencio',
         body: [
           'Tiempo de desarrollo profundo para Gratia, The Lunar Journal, herramientas local-first y Garden Core.',
           'Infraestructura, dominios, hardware, pruebas, escritura y el mantenimiento lento que mantiene coherente un proyecto.',
         ],
       },
       {
-        title: 'Cómo vuelve el valor',
+        title: 'El eco del valor',
         body: [
           'El dinero no es el punto. Es una forma en que el valor vuelve al campo.',
           'No estás comprando acceso ni desbloqueando un nivel. Estás ayudando a que un nodo pequeño siga construyendo sin convertir el trabajo en extracción.',
@@ -74,17 +73,17 @@ const copy = {
     eyebrow: 'Susține nodul',
     title: 'Ajută Gratia să rămână liniștită, locală și vie.',
     subtitle:
-      'Gratia este un proiect viu: software, ritual, limbaj și grijă. Dacă îți aduce claritate, poți susține munca.',
+      'Gratia este construită lent, fără extracție. Dacă acest spațiu liniștit îți aduce claritate, ești binevenit să ajuți la menținerea lui în viață.',
     sections: [
       {
-        title: 'Ce ține sprijinul tău',
+        title: 'Susținerea liniștii',
         body: [
-          'Timp de dezvoltare profundă pentru Gratia, The Lunar Journal, unelte local-first și Garden Core.',
+          'Timp de dezvoltare profund pentru Gratia, The Lunar Journal, unelte local-first și Garden Core.',
           'Infrastructură, domenii, hardware, testare, scris și întreținerea lentă care păstrează coerența unui proiect.',
         ],
       },
       {
-        title: 'Cum se întoarce valoarea',
+        title: 'Valoarea care se întoarce',
         body: [
           'Banii nu sunt punctul central. Sunt un fel prin care valoarea se întoarce în câmp.',
           'Nu cumperi acces și nu deblochezi un nivel. Ajuți un nod mic să construiască fără să transforme munca în extracție.',
@@ -104,34 +103,9 @@ const copy = {
   },
 } as const;
 
-type LangCode = keyof typeof copy;
-
-function resolveLang(raw?: string | null): LangCode {
-  if (!raw) return defaultLocale as LangCode;
-  const lower = raw.toLowerCase();
-  return lower in copy ? (lower as LangCode) : (defaultLocale as LangCode);
-}
-
 function SupportContent() {
-  const searchParams = useSearchParams();
-  const [activeLang, setActiveLang] = useState<LangCode>(defaultLocale as LangCode);
-
-  useEffect(() => {
-    const syncLocale = (event?: Event) => {
-      const eventLocale =
-        event instanceof CustomEvent && typeof event.detail?.locale === 'string'
-          ? event.detail.locale
-          : null;
-      const langParam = searchParams.get('lang');
-      const stored = window.localStorage.getItem('gratia.locale');
-      setActiveLang(resolveLang(eventLocale || langParam || stored || defaultLocale));
-    };
-    syncLocale();
-    window.addEventListener('gratia:localechange', syncLocale);
-    return () => window.removeEventListener('gratia:localechange', syncLocale);
-  }, [searchParams]);
-
-  const t = copy[activeLang];
+  const locale = useLocale();
+  const t = copy[locale];
 
   return (
     <main className="min-h-screen">
@@ -140,7 +114,7 @@ function SupportContent() {
           <p className="text-xs tracking-[0.25em] text-[color:var(--color-muted)] uppercase">
             {t.eyebrow}
           </p>
-          <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-6xl">
+          <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-5xl">
             {t.title}
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-[color:var(--color-muted)]">
@@ -148,20 +122,7 @@ function SupportContent() {
           </p>
         </header>
 
-        <section className="grid gap-5">
-          {t.sections.map((section) => (
-            <Card key={section.title} as="article" variant="plain" className="space-y-4">
-              <h2 className="font-gratia text-2xl font-medium tracking-tight">{section.title}</h2>
-              <div className="space-y-3 leading-relaxed text-[color:var(--color-muted)]">
-                {section.body.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
-            </Card>
-          ))}
-        </section>
-
-        <section className="flex flex-wrap gap-3 border-t border-[color:var(--color-border)] pt-8">
+        <section className="flex flex-wrap gap-3">
           <a
             href="https://revolut.me/gratiaos"
             className="inline-flex items-center justify-center rounded-full border border-[color:var(--color-accent)]/40 bg-[color:var(--color-accent)]/10 px-5 py-2.5 text-sm font-medium text-[color:var(--color-accent)] transition hover:bg-[color:var(--color-accent)]/15"
@@ -174,6 +135,19 @@ function SupportContent() {
           >
             {t.emailCta}
           </a>
+        </section>
+
+        <section className="grid gap-5">
+          {t.sections.map((section) => (
+            <Card key={section.title} as="article" variant="plain" className="space-y-4">
+              <h2 className="font-gratia text-2xl font-medium tracking-tight">{section.title}</h2>
+              <div className="space-y-3 leading-relaxed text-[color:var(--color-muted)]">
+                {section.body.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            </Card>
+          ))}
         </section>
 
         <p className="text-xs leading-relaxed text-[color:var(--color-muted)]">{t.note}</p>

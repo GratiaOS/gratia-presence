@@ -5,15 +5,15 @@ export const dynamic = 'force-static';
 
 const meta = {
   en: {
-    title: 'Gratia - Personal OS',
+    title: 'Gratia - A calm place to think.',
     description: 'Quiet software for presence, reflection, and rhythm.',
   },
   es: {
-    title: 'Gratia - Personal OS',
-    description: 'Software tranquilo para presencia, reflexión y ritmo.',
+    title: 'Gratia - Un lugar tranquilo para pensar.',
+    description: 'Software sereno para la presencia, la reflexión y el ritmo.',
   },
   ro: {
-    title: 'Gratia - Personal OS',
+    title: 'Gratia - Un loc liniștit în care să gândești.',
     description: 'Software liniștit pentru prezență, reflecție și ritm.',
   },
 } as const;

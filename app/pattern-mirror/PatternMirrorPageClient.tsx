@@ -5,22 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import { Badge, Button, Card, Pill, Toolbar, ToolbarGroup, Whisper } from '@gratiaos/ui';
 import { Leaf } from '@gratiaos/icons';
 
+import type { PatternMirrorLocale, PatternMirrorResponse } from '../api/pattern-mirror/types';
 import { I18nProvider, useTranslation } from '../../i18n/I18nProvider';
 import { resources } from '../../i18n/resources';
 import { defaultLocale } from '../../i18n/config.js';
 import { useSkinField } from '../skin/SkinFieldProvider';
-
-type PatternMirrorLocale = 'en' | 'es' | 'ro';
-
-type PatternMirrorResponse = {
-  reflectionBullets: string[];
-  patternChips: string[];
-  energyTone: string;
-  nextTrueStepPrompt: string;
-  meta?: {
-    source?: 'local-storage' | 'local-reflection';
-  };
-};
 
 type Stage = 'idle' | 'ready' | 'listening' | 'reflection' | 'trueStep' | 'error';
 type PatternMeta = { label: string; description?: string; tone?: string; emoji?: string };
@@ -31,46 +20,6 @@ const TOOLBAR_NOZZLE_KEY = 'pattern-mirror.toolbar-nozzle';
 const TOOLBAR_HINT_KEY = 'pattern-mirror.toolbar-hint-seen';
 const reflectionLocales: PatternMirrorLocale[] = ['en', 'es', 'ro'];
 const normalizePatternKey = (chip: string) => chip.trim().toLowerCase().replace(/\s+/g, '-');
-
-function buildLocalReflection(content: string, locale: PatternMirrorLocale): PatternMirrorResponse {
-  const clean = content.replace(/\s+/g, ' ').trim();
-  const short = clean.length > 96 ? `${clean.slice(0, 96).trimEnd()}...` : clean;
-
-  const copy: Record<PatternMirrorLocale, Omit<PatternMirrorResponse, 'meta'>> = {
-    en: {
-      reflectionBullets: [
-        `A clear thread is present here: "${short}"`,
-        'The entry seems to hold both attention and movement.',
-        'There is enough signal to name a small next step.',
-      ],
-      patternChips: ['clear-thread', 'quiet-signal', 'next-step'],
-      energyTone: 'clear and grounded',
-      nextTrueStepPrompt: 'What is the smallest honest action this points toward?',
-    },
-    es: {
-      reflectionBullets: [
-        `Hay un hilo claro aqui: "${short}"`,
-        'La entrada parece sostener atencion y movimiento.',
-        'Hay suficiente senal para nombrar un siguiente paso pequeno.',
-      ],
-      patternChips: ['clear-thread', 'quiet-signal', 'next-step'],
-      energyTone: 'claro y estable',
-      nextTrueStepPrompt: 'Cual es la accion honesta mas pequena que esto senala?',
-    },
-    ro: {
-      reflectionBullets: [
-        `Exista un fir clar aici: "${short}"`,
-        'Textul pare sa tina impreuna atentie si miscare.',
-        'Este suficient semnal pentru un pas mic si concret.',
-      ],
-      patternChips: ['clear-thread', 'quiet-signal', 'next-step'],
-      energyTone: 'clar si asezat',
-      nextTrueStepPrompt: 'Care este cel mai mic gest sincer pe care il indica asta?',
-    },
-  };
-
-  return { ...copy[locale], meta: { source: 'local-reflection' } };
-}
 
 function PatternMirrorContent() {
   const { t, locale: translationLocale, setLocale } = useTranslation('reflection');
@@ -764,7 +713,21 @@ function PatternMirrorContent() {
     setMediumCopied(false);
 
     try {
-      const data = buildLocalReflection(current, mirrorLocale);
+      const res = await fetch('/api/pattern-mirror', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Language': mirrorLocale,
+        },
+        body: JSON.stringify({
+          content: current,
+          lang: mirrorLocale,
+          locale: mirrorLocale,
+          mood: nozzleMood,
+        }),
+      });
+
+      const data = (await res.json()) as PatternMirrorResponse;
 
       setReflectionBullets(data.reflectionBullets ?? []);
       setPatternChips(data.patternChips ?? []);

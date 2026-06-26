@@ -56,31 +56,31 @@ export function LedgerCard({ emotion, index }: { emotion: any; index: number }) 
     const isHighIntensity = emotion.intensity >= 0.7;
 
     const handleElevate = async () => {
-        if (!window.confirm(`Save "${emotion.kind}" to this browser's local memory pool?`)) {
+        if (!window.confirm(`Elevate "${emotion.kind}" to Firegate Memory Pool for deep processing?`)) {
             return;
         }
 
         setIsElevating(true);
         try {
-            const storageKey = 'gratia.local-memory-pool';
-            const existing = window.localStorage.getItem(storageKey);
-            const items = existing ? JSON.parse(existing) : [];
-            const next = Array.isArray(items) ? items : [];
-            window.localStorage.setItem(
-                storageKey,
-                JSON.stringify([{ ...emotion, savedAt: new Date().toISOString() }, ...next].slice(0, 100))
-            );
+            const resp = await fetch('http://localhost:3000/api/kernel/ingest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(emotion),
+            });
+
+            if (!resp.ok) throw new Error('Failed to elevate');
 
             showToast({
-                title: 'Saved locally',
-                desc: 'Stored in this browser only. No server call was made.',
+                title: 'Scene elevated ⚡',
+                desc: 'Added to Firegate Memory Pool.',
                 variant: 'positive',
+                icon: '🌌',
             });
         } catch (err) {
             console.error(err);
             showToast({
-                title: 'Local save failed',
-                desc: 'The browser could not write to localStorage.',
+                title: 'Elevation failed',
+                desc: 'Could not reach Firegate Kernel.',
                 variant: 'danger',
             });
         } finally {
@@ -147,7 +147,7 @@ export function LedgerCard({ emotion, index }: { emotion: any; index: number }) 
                                 onClick={handleElevate}
                                 disabled={isElevating}
                             >
-                                {isElevating ? 'Saving...' : 'Save locally'}
+                                {isElevating ? 'Elevating...' : '⚡ Elevate to Kernel'}
                             </Button>
                         )}
                     </div>

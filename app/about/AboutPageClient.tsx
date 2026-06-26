@@ -1,14 +1,13 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { Card } from '@gratiaos/ui';
-import { defaultLocale } from '../../i18n/config';
+import { useLocale } from '../../i18n/useLocale';
 
 const copy = {
   en: {
-    eyebrow: 'About GratiaOS',
+    eyebrow: 'About Gratia',
     title: 'Heartware, not hurryware.',
     intro: [
       'Most software asks you to move faster.',
@@ -16,21 +15,21 @@ const copy = {
     ],
     sections: [
       {
-        title: 'A Personal OS for Presence',
+        title: 'Space to hear yourself again',
         body: [
           'Gratia is quiet software for staying with yourself. It is built around small rituals, local memory, and gentle thresholds.',
           'No account is required. No feed is waiting. No cloud needs to know who you are.',
         ],
       },
       {
-        title: 'Local by Default',
+        title: 'Your words stay with you',
         body: [
           'Gratia begins in your browser. Your journal entries are stored locally on your device.',
           'Nothing is synced, analyzed, or sent away unless a future version clearly asks your consent. This is digital sovereignty in its simplest form: less capture, more agency.',
         ],
       },
       {
-        title: 'Daily Rituals',
+        title: 'Rhythms for ordinary days',
         body: [
           'Firegate is a morning threshold for intention: before the noise enters, choose what you are carrying today.',
           'The Lunar Journal is a moon-phase companion for reflection: the page changes with the cycle, while the writing stays yours.',
@@ -38,7 +37,7 @@ const copy = {
         ],
       },
       {
-        title: 'Support the Node',
+        title: 'Sustaining the quiet',
         body: [
           'Gratia is not built around extraction. It is a living project: software, ritual, language, and care.',
           'If it gives you clarity, support the work. Money is not the point. It is one way value echoes back into the field.',
@@ -49,7 +48,7 @@ const copy = {
     cta: 'Open the Lunar Journal',
   },
   es: {
-    eyebrow: 'Sobre GratiaOS',
+    eyebrow: 'Sobre Gratia',
     title: 'Heartware, no hurryware.',
     intro: [
       'La mayoría del software te pide ir más rápido.',
@@ -57,21 +56,21 @@ const copy = {
     ],
     sections: [
       {
-        title: 'Un Personal OS para la presencia',
+        title: 'Un espacio para volver a escucharte',
         body: [
           'Gratia es software tranquilo para permanecer contigo. Está construido alrededor de pequeños rituales, memoria local y umbrales suaves.',
           'No hace falta cuenta. No hay feed esperando. Ninguna nube necesita saber quién eres.',
         ],
       },
       {
-        title: 'Local por defecto',
+        title: 'Tus palabras se quedan contigo',
         body: [
           'Gratia empieza en tu navegador. Tus entradas de diario se guardan localmente en tu dispositivo.',
           'Nada se sincroniza, analiza o envía fuera a menos que una versión futura pida claramente tu consentimiento. Soberanía digital en su forma más simple: menos captura, más agencia.',
         ],
       },
       {
-        title: 'Rituales diarios',
+        title: 'Ritmos para días ordinarios',
         body: [
           'Firegate es un umbral matinal para la intención: antes de que entre el ruido, elige qué llevas hoy.',
           'The Lunar Journal es un compañero de fases lunares para reflexionar: la página cambia con el ciclo, la escritura permanece tuya.',
@@ -79,7 +78,7 @@ const copy = {
         ],
       },
       {
-        title: 'Sostén el nodo',
+        title: 'Sostener el silencio',
         body: [
           'Gratia no está construido alrededor de la extracción. Es un proyecto vivo: software, ritual, lenguaje y cuidado.',
           'Si te da claridad, apoya el trabajo. El dinero no es el punto. Es una forma en que el valor vuelve al campo.',
@@ -90,7 +89,7 @@ const copy = {
     cta: 'Abrir el Lunar Journal',
   },
   ro: {
-    eyebrow: 'Despre GratiaOS',
+    eyebrow: 'Despre Gratia',
     title: 'Heartware, nu hurryware.',
     intro: [
       'Majoritatea software-ului îți cere să te miști mai repede.',
@@ -98,21 +97,21 @@ const copy = {
     ],
     sections: [
       {
-        title: 'Un Personal OS pentru prezență',
+        title: 'Un spațiu în care să te auzi din nou',
         body: [
           'Gratia este software liniștit pentru a rămâne cu tine. Este construit în jurul ritualurilor mici, memoriei locale și pragurilor blânde.',
           'Nu ai nevoie de cont. Nu te așteaptă niciun feed. Niciun cloud nu trebuie să știe cine ești.',
         ],
       },
       {
-        title: 'Local implicit',
+        title: 'Cuvintele tale rămân cu tine',
         body: [
           'Gratia începe în browserul tău. Însemnările tale de jurnal sunt salvate local, pe dispozitivul tău.',
           'Nimic nu este sincronizat, analizat sau trimis mai departe fără ca o versiune viitoare să îți ceară clar consimțământul. Suveranitate digitală în forma ei simplă: mai puțină captură, mai multă agenție.',
         ],
       },
       {
-        title: 'Ritualuri zilnice',
+        title: 'Ritmuri pentru zile obișnuite',
         body: [
           'Firegate este un prag de dimineață pentru intenție: înainte să intre zgomotul, alegi ce porți azi.',
           'The Lunar Journal este un companion pe fazele lunii pentru reflecție: pagina se schimbă cu ciclul, scrisul rămâne al tău.',
@@ -120,9 +119,9 @@ const copy = {
         ],
       },
       {
-        title: 'Susține nodul',
+        title: 'Susținerea liniștii',
         body: [
-          'Gratia nu este construită în jurul extracției. Este un proiect viu: software, ritual, limbaj și grijă.',
+          'Gratia nu este construită în jurul extracției. Es un proiect viu: software, ritual, limbaj și grijă.',
           'Dacă îți aduce claritate, susține munca. Banii nu sunt punctul central. Sunt un fel prin care valoarea se întoarce în câmp.',
         ],
         cta: 'Susține Gratia',
@@ -132,34 +131,9 @@ const copy = {
   },
 } as const;
 
-type LangCode = keyof typeof copy;
-
-function resolveLang(raw?: string | null): LangCode {
-  if (!raw) return defaultLocale as LangCode;
-  const lower = raw.toLowerCase();
-  return lower in copy ? (lower as LangCode) : (defaultLocale as LangCode);
-}
-
 function AboutContent() {
-  const searchParams = useSearchParams();
-  const [activeLang, setActiveLang] = useState<LangCode>(defaultLocale as LangCode);
-
-  useEffect(() => {
-    const syncLocale = (event?: Event) => {
-      const eventLocale =
-        event instanceof CustomEvent && typeof event.detail?.locale === 'string'
-          ? event.detail.locale
-          : null;
-      const langParam = searchParams.get('lang');
-      const stored = window.localStorage.getItem('gratia.locale');
-      setActiveLang(resolveLang(eventLocale || langParam || stored || defaultLocale));
-    };
-    syncLocale();
-    window.addEventListener('gratia:localechange', syncLocale);
-    return () => window.removeEventListener('gratia:localechange', syncLocale);
-  }, [searchParams]);
-
-  const t = copy[activeLang];
+  const locale = useLocale();
+  const t = copy[locale];
 
   return (
     <main className="min-h-screen">
@@ -168,7 +142,7 @@ function AboutContent() {
           <p className="text-xs tracking-[0.25em] text-[color:var(--color-muted)] uppercase">
             {t.eyebrow}
           </p>
-          <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-6xl">
+          <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-5xl">
             {t.title}
           </h1>
           <div className="space-y-3 text-lg leading-relaxed text-[color:var(--color-muted)]">

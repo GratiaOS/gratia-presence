@@ -1,11 +1,12 @@
 /**
- * Local Ledger Bridge
- * -------------------
+ * M3 Bridge Component — Emotional Ledger Integration
+ * ---------------------------------------------------
+ * Whisper: "invisible infrastructure, visible consequences." 🌬️
  *
  * Purpose
  *  • Silent component (renders nothing) that listens for UI signals
  *  • Intercepts gratia:coherence and gratia:receptive CustomEvents
- *  • Bridges volatile UI events to browser-local ledger entries
+ *  • Bridges volatile UI events → persistent M3 Emotional Ledger entries
  *
  * Architecture
  *  • Mounted at root layout level (always active)
@@ -34,7 +35,7 @@ export function M3Bridge() {
       const signal = ce.detail;
 
       await logEmotionToM3({
-        who: 'local-user',
+        who: 'Raz', // TODO: Extract from auth context when available
         kind: 'coherence',
         band: 'coherence',
         intensity: signal.intensity || 0.9,
@@ -45,7 +46,7 @@ export function M3Bridge() {
       });
 
       if (process.env.NODE_ENV === 'development') {
-        console.log('[Local Ledger Bridge] Coherence logged:', signal);
+        console.log('🤍 [M3 Bridge] Coherence logged to Ledger:', signal);
       }
     };
 
@@ -55,7 +56,7 @@ export function M3Bridge() {
       const signal = ce.detail;
 
       await logEmotionToM3({
-        who: 'local-user',
+        who: 'Raz', // TODO: Extract from auth context when available
         kind: 'receptive',
         band: 'open',
         intensity: signal.intensity || 0.3,
@@ -66,7 +67,7 @@ export function M3Bridge() {
       });
 
       if (process.env.NODE_ENV === 'development') {
-        console.log('[Local Ledger Bridge] Receptive state logged:', signal);
+        console.log('🌬️ [M3 Bridge] Receptive state logged to Ledger:', signal);
       }
     };
 

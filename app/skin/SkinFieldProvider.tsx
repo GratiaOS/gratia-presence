@@ -30,15 +30,27 @@ const SKIN_THEME_COLORS: Record<KernelSkinId, string> = {
 };
 
 function normalizeSkinId(value?: string | null): KernelSkinId | null {
-  if (value === 'SUN' || value === 'MOON' || value === 'GARDEN' || value === 'STELLAR' || value === 'OFF') {
-    return value;
+  const normalized = (value ?? '').trim().toUpperCase();
+  if (
+    normalized === 'SUN' ||
+    normalized === 'MOON' ||
+    normalized === 'GARDEN' ||
+    normalized === 'STELLAR' ||
+    normalized === 'OFF'
+  ) {
+    return normalized as KernelSkinId;
   }
   return null;
 }
 
 function readStoredSkinId(): KernelSkinId | null {
   if (typeof window === 'undefined') return null;
-  return normalizeSkinId(window.localStorage.getItem(STORAGE_KEY));
+  const stored = window.localStorage.getItem(STORAGE_KEY);
+  const normalized = normalizeSkinId(stored);
+  if (normalized && stored !== normalized) {
+    window.localStorage.setItem(STORAGE_KEY, normalized);
+  }
+  return normalized;
 }
 
 function writeSkinSideEffects(id: KernelSkinId) {
@@ -51,25 +63,17 @@ function writeSkinSideEffects(id: KernelSkinId) {
 }
 
 export function SkinFieldProvider({ children }: { children: React.ReactNode }) {
-  const [skinId, setSkinIdState] = useState<KernelSkinId>('MOON');
-
-  useLayoutEffect(() => {
-    if (typeof window === 'undefined') return;
+  const [skinId, setSkinIdState] = useState<KernelSkinId>(() => {
+    if (typeof window === 'undefined') return 'SUN';
     const stored = readStoredSkinId();
     const prefersDark =
       window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return stored ?? (prefersDark ? 'MOON' : 'SUN');
+  });
 
-    // dacă sistemul e pe dark și ultimul skin era SUN, folosim MOON ca default de siguranță
-    const next = stored
-      ? prefersDark && stored === 'SUN'
-        ? 'MOON'
-        : stored
-      : prefersDark
-        ? 'MOON'
-        : 'SUN';
-
-    setSkinIdState(next);
-    writeSkinSideEffects(next);
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return;
+    writeSkinSideEffects(skinId);
 
     // ascultăm schimbarea sistemului light/dark și sincronizăm doar pentru perechea SUN/MOON
     const mq = window.matchMedia('(prefers-color-scheme: dark)');

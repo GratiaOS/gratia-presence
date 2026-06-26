@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import {
   createEnergyClient,
   createLocalStorageEnergyAdapter,
@@ -17,8 +16,8 @@ import {
   type EnergyHeaderCopy,
   type TransitionGateCopy,
 } from '@gratiaos/ui';
-import { defaultLocale, supportedLocales } from '../../../i18n/config';
 import type { Locale } from '../../../i18n/resources';
+import { useLocale } from '../../../i18n/useLocale';
 import { pullEnergyStateFromM3Edge, syncEnergyMarkWithM3Edge } from '../../../lib/m3-edge';
 
 const LOCALE_STORAGE_KEY = 'gratia.locale';
@@ -169,22 +168,7 @@ const copy: Record<Locale, EnergyLocaleCopy> = {
   },
 };
 
-function normalizeLocale(value?: string | null): Locale {
-  if (value && supportedLocales.includes(value)) return value as Locale;
-  return defaultLocale as Locale;
-}
 
-function readLocale(queryLocale?: string | null) {
-  if (typeof window === 'undefined') return defaultLocale as Locale;
-  const params = new URLSearchParams(window.location.search);
-  return normalizeLocale(queryLocale ?? params.get(LOCALE_QUERY_KEY) ?? window.localStorage.getItem(LOCALE_STORAGE_KEY));
-}
-
-function readLocaleEvent(event?: Event) {
-  const detail = event && 'detail' in event ? (event as CustomEvent<{ locale?: unknown }>).detail : null;
-  const eventLocale = typeof detail?.locale === 'string' ? detail.locale : null;
-  return eventLocale ? normalizeLocale(eventLocale) : null;
-}
 
 function localizePrediction(prediction: EnergyPrediction, locale: Locale): EnergyPrediction {
   const localized = copy[locale]?.rituals[prediction.exit.ritual.id] ?? prediction.exit.ritual;
@@ -211,12 +195,10 @@ function createBrowserSnapshot() {
 }
 
 export default function EnergySystemClient({ variant = 'header' }: EnergySystemClientProps) {
-  const searchParams = useSearchParams();
-  const queryLocale = searchParams?.get(LOCALE_QUERY_KEY);
   const client = useMemo(() => createEnergyClient(createLocalStorageEnergyAdapter()), []);
   const [state, setState] = useState<EnergyState>(fallbackState);
   const [prediction, setPrediction] = useState<EnergyPrediction>(fallbackPrediction);
-  const [locale, setLocale] = useState<Locale>(() => normalizeLocale(queryLocale));
+  const locale = useLocale();
   const [gateOpen, setGateOpen] = useState(false);
 
   const refresh = useCallback(() => {
@@ -235,7 +217,6 @@ export default function EnergySystemClient({ variant = 'header' }: EnergySystemC
     const snapshot = createBrowserSnapshot();
     setState(snapshot.state);
     setPrediction(snapshot.prediction);
-    setLocale(readLocale(queryLocale));
     pullRemoteEnergy();
     const refreshFromFocus = () => {
       refresh();
@@ -243,21 +224,15 @@ export default function EnergySystemClient({ variant = 'header' }: EnergySystemC
     };
     window.addEventListener('storage', refreshFromFocus);
     window.addEventListener('focus', refreshFromFocus);
-    const syncLocale = (event?: Event) => {
-      setLocale(readLocaleEvent(event) ?? readLocale(queryLocale));
-    };
-    syncLocale();
-    window.addEventListener('gratia:localechange', syncLocale);
     window.addEventListener('gratia:m3edge:change', pullRemoteEnergy);
     window.addEventListener('gratia:energy:remote-sync', refresh);
     return () => {
       window.removeEventListener('storage', refreshFromFocus);
       window.removeEventListener('focus', refreshFromFocus);
-      window.removeEventListener('gratia:localechange', syncLocale);
       window.removeEventListener('gratia:m3edge:change', pullRemoteEnergy);
       window.removeEventListener('gratia:energy:remote-sync', refresh);
     };
-  }, [pullRemoteEnergy, queryLocale, refresh]);
+  }, [pullRemoteEnergy, refresh]);
 
   useEffect(() => {
     document.documentElement.dataset.energyBand = state.currentBand;

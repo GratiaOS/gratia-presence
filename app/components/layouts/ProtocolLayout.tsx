@@ -36,20 +36,20 @@ export default function ProtocolLayout({
 
   const formattedDate = updated
     ? new Date(updated).toLocaleDateString(locale, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
     : undefined;
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-16">
+    <main className="mx-auto flex max-w-4xl flex-col gap-4 px-6 py-16 sm:px-8">
       <header className="mb-10">
-        <h1 className="text-title-gratia text-accent text-4xl" suppressHydrationWarning>
+        <h1 className="font-gratia text-4xl leading-tight font-semibold tracking-tight md:text-5xl" suppressHydrationWarning>
           {hero}
         </h1>
         {summary && (
-          <p className="text-muted mt-2 text-lg" suppressHydrationWarning>
+          <p className="text-lg leading-relaxed text-[color:var(--color-muted)]" suppressHydrationWarning>
             {summary}
           </p>
         )}

@@ -19,7 +19,7 @@ export default function JoinPage() {
         </p>
 
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
-          <a href="mailto:contact@gratia.space" className="btn-primary">
+          <a href="mailto:razvan@gratia.space" className="btn-primary">
             Email Us to Join
           </a>
           <Link href="/contribute" className="btn-outline">
