@@ -1,9 +1,8 @@
-const CACHE_NAME = 'gratia-shell-v2';
+const CACHE_NAME = 'gratia-shell-v3';
 const APP_SHELL = [
   '/',
   '/today',
   '/about',
-  '/support',
   '/backup',
   '/manifest.webmanifest',
   '/favicon.svg',

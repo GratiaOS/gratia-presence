@@ -20,7 +20,6 @@ const labels: Record<
     journal: string;
     notes: string;
     about: string;
-    support: string;
     backup: string;
     openNav: string;
     closeNav: string;
@@ -31,7 +30,6 @@ const labels: Record<
     journal: 'Lunar Journal',
     notes: 'Notes',
     about: 'About',
-    support: 'Support',
     backup: 'Backup',
     openNav: 'Open navigation',
     closeNav: 'Close navigation',
@@ -41,7 +39,6 @@ const labels: Record<
     journal: 'Diario Lunar',
     notes: 'Notas',
     about: 'Acerca de',
-    support: 'Apoyar',
     backup: 'Copia',
     openNav: 'Abrir navegación',
     closeNav: 'Cerrar navegación',
@@ -51,7 +48,6 @@ const labels: Record<
     journal: 'Jurnal Lunar',
     notes: 'Note',
     about: 'Despre',
-    support: 'Susține',
     backup: 'Copie',
     openNav: 'Deschide navigarea',
     closeNav: 'Închide navigarea',
@@ -82,9 +78,6 @@ export default function SiteHeader() {
           </Link>
           <Link href="/about" className="p-3 underline-offset-4 hover:underline">
             {t.about}
-          </Link>
-          <Link href="/support" className="p-3 underline-offset-4 hover:underline">
-            {t.support}
           </Link>
           <Link href="/backup" className="p-3 underline-offset-4 hover:underline">
             {t.backup}
@@ -118,9 +111,6 @@ export default function SiteHeader() {
           </Link>
           <Link href="/about" className="py-3 underline-offset-4 hover:underline" onClick={() => setNavOpen(false)}>
             {t.about}
-          </Link>
-          <Link href="/support" className="py-3 underline-offset-4 hover:underline" onClick={() => setNavOpen(false)}>
-            {t.support}
           </Link>
           <Link href="/backup" className="py-3 underline-offset-4 hover:underline" onClick={() => setNavOpen(false)}>
             {t.backup}

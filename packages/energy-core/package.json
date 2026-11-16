@@ -4,7 +4,6 @@
   "description": "Shared Gratia energy engine: canonical bands, local-first storage, and API-shaped methods.",
   "license": "AGPL-3.0-only",
   "type": "module",
-  "funding": "https://revolut.me/gratiaos",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

@@ -36,14 +36,6 @@ const copy = {
           'The Burn Ritual is an evening practice for releasing residue: keep the signal, let the static go.',
         ],
       },
-      {
-        title: 'Sustaining the quiet',
-        body: [
-          'Gratia is not built around extraction. It is a living project: software, ritual, language, and care.',
-          'If it gives you clarity, support the work. Money is not the point. It is one way value echoes back into the field.',
-        ],
-        cta: 'Support Gratia',
-      },
     ],
     cta: 'Open the Lunar Journal',
   },
@@ -77,14 +69,6 @@ const copy = {
           'The Burn Ritual es una práctica de tarde para soltar residuo: conserva la señal, deja ir la estática.',
         ],
       },
-      {
-        title: 'Sostener el silencio',
-        body: [
-          'Gratia no está construido alrededor de la extracción. Es un proyecto vivo: software, ritual, lenguaje y cuidado.',
-          'Si te da claridad, apoya el trabajo. El dinero no es el punto. Es una forma en que el valor vuelve al campo.',
-        ],
-        cta: 'Apoyar Gratia',
-      },
     ],
     cta: 'Abrir el Lunar Journal',
   },
@@ -117,14 +101,6 @@ const copy = {
           'The Lunar Journal este un companion pe fazele lunii pentru reflecție: pagina se schimbă cu ciclul, scrisul rămâne al tău.',
           'The Burn Ritual este o practică de seară pentru eliberarea reziduului: păstrezi semnalul, lași statica să plece.',
         ],
-      },
-      {
-        title: 'Susținerea liniștii',
-        body: [
-          'Gratia nu este construită în jurul extracției. Es un proiect viu: software, ritual, limbaj și grijă.',
-          'Dacă îți aduce claritate, susține munca. Banii nu sunt punctul central. Sunt un fel prin care valoarea se întoarce în câmp.',
-        ],
-        cta: 'Susține Gratia',
       },
     ],
     cta: 'Deschide Lunar Journal',
@@ -161,11 +137,6 @@ function AboutContent() {
                   <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
-              {'cta' in section ? (
-                <Link href="/support" className="inline-flex text-sm underline underline-offset-8">
-                  {section.cta}
-                </Link>
-              ) : null}
             </Card>
           ))}
         </section>
