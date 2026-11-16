@@ -67,7 +67,6 @@ export default function CodexViennaClient() {
         />
         <OutputGlyph glyph={currentGlyph} archive={archive} />
         <MarkSceneCard />
-        <SupportBlock />
         <Footer />
       </section>
     </main>
@@ -264,31 +263,6 @@ function OutputGlyph({ glyph, archive }: OutputGlyphProps) {
           )}
         </div>
       </div>
-    </section>
-  );
-}
-
-function SupportBlock() {
-  return (
-    <section className="mt-14 space-y-4 border-t border-[color:var(--color-border)] pt-8">
-      <h2
-        className="text-xs tracking-[0.25em] text-[color:var(--color-subtle)] uppercase"
-        style={{ fontFamily: 'var(--font-funkhaus)' }}
-      >
-        FEED THE SOURCE · PIZZA PARTY
-      </h2>
-      <p className="max-w-xl text-sm leading-relaxed text-[color:var(--color-muted)]">
-        If this garden of signals feels like home, you can send a slice of love back to the studio
-        in Vienna — a symbolic pizza party to keep the lights on and the antennas humming.
-      </p>
-      <Link href="https://nguyengobber.gumroad.com/l/funkhaus" target="_blank" rel="noreferrer">
-        <span className="shadow-depth-1 whisper-ring mood-glow hover:shadow-depth-2 inline-flex items-center justify-center rounded-full bg-[color:var(--color-accent)] px-6 py-2 font-sans text-sm font-medium tracking-[0.16em] text-[color:var(--color-on-accent)] uppercase transition-shadow">
-          Support the archive
-        </span>
-      </Link>
-      <p className="text-xs text-[color:var(--color-faint)]">
-        Redirects to Funkhaus on Gumroad · pay what you want.
-      </p>
     </section>
   );
 }

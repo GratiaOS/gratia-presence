@@ -4,7 +4,6 @@
   "description": "Ghost-first identity separation engine for sovereign tags and inert shadows.",
   "license": "AGPL-3.0-only",
   "type": "module",
-  "funding": "https://revolut.me/gratiaos",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
